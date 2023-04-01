@@ -25,16 +25,18 @@ body {
 
 .other-pages ul {
     list-style-type: none;
+    display:flex;
+    flex-direction: column;
     margin: 0;
     padding: 0;
   }
   
 .other-pages li {
-display: inline-block;
-font-size: 50px;
-margin-right: 20px;
+    display: inline-block;
+    font-size: 50px;
+    margin-right: 20px;
 }
 
 .other-pages li:last-child {
-margin-right: 0;
+    margin-right: 0;
 }
