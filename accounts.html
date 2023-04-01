@@ -39,13 +39,15 @@
             function displayAccount() {
                 // save to storage
                 
-                let accountName = document.querySelector("#accountName");
+                let accountName = document.querySelector("#accountName").value;
                 
                 // add to accounts page
                 let pretax_accounts = document.querySelector("#pretax-accounts");
                 let newRow = pretax_accounts.insertRow();
                 let newCell = newRow.insertCell();
                 newCell.textContent = accountName;
+
+                accountName.value = "";
             }
         </script>
     </body>
