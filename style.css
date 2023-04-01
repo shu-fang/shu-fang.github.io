@@ -1,6 +1,8 @@
 
 body {
-    background-color:bisque; text-align:center; color:black
+    background-color:bisque;
+    text-align:center;
+    color:black
 }
 
 #addPretax {
@@ -24,19 +26,19 @@ body {
 }
 
 .other-pages {
-    float:left;
+    display:flex;
+    flex-direction: column;
     margin-right:20px;
+    text-align: left;
 }
 
 .other-pages ul {
     list-style-type: none;
-    display:block;
     margin: 0;
     padding: 0;
   }
   
 .other-pages li {
-    display: block;
     font-size: 50px;
     margin-right: 10px;
 }
