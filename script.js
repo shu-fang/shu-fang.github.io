@@ -7,7 +7,7 @@ accounts.forEach((account) => {
 
 function displayAccount() {
     let accountName = document.querySelector("#accountName");
-    let pretax_account = document.querySelector("#pretax-accounts");
+    let pretax_accounts = document.querySelector("#pretax-accounts");
     let newRow = pretax_accounts.insertRow();
     let newCell = newRow.insertCell();
     newCell.textContent = accountName.value();
