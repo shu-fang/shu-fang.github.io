@@ -23,6 +23,11 @@ body {
     width:30%;
 }
 
+.other-pages {
+    float:left;
+    margin-right:20px;
+}
+
 .other-pages ul {
     list-style-type: none;
     display:flex;
