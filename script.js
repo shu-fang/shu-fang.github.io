@@ -1,9 +1,3 @@
-const accountsTable = document.querySelector("#accounts-table");
-accounts.forEach((account) => {
-  const newRow = accountsTable.insertRow();
-  const accountNameCell = newRow.insertCell(0);
-  accountNameCell.innerHTML = account;
-});
 
 function displayAccount() {
     let accountName = document.querySelector("#accountName");
@@ -12,6 +6,14 @@ function displayAccount() {
     let newCell = newRow.insertCell();
     newCell.textContent = accountName.value();
     
+    // add to inputs page
+    const accountsTable = document.querySelector("#accounts-table");
+    accounts.forEach((account) => {
+    const newRow = accountsTable.insertRow();
+    const accountNameCell = newRow.insertCell(0);
+    accountNameCell.innerHTML = account;
+    });
+
     // save to storage
     let accounts = JSON.parse(localStorage.getItem("accounts")) || [];
     accounts.push(accountName.value);
