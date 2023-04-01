@@ -11,10 +11,11 @@ function displayAccount() {
     let newRow = pretax_accounts.insertRow();
     let newCell = newRow.insertCell();
     newCell.textContent = accountName.value();
-    accountName.value = "";
-
+    
     // save to storage
     let accounts = JSON.parse(localStorage.getItem("accounts")) || [];
     accounts.push(accountName.value);
     localStorage.setItem("accounts", JSON.stringify(accounts));
+
+    accountName.value = "";
 }
