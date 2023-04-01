@@ -10,7 +10,7 @@ function displayAccount() {
     let pretax_accounts = document.querySelector("#pretax-accounts");
     let newRow = pretax_accounts.insertRow();
     let newCell = newRow.insertCell();
-    newCell.textContent = accountName.value();
+    newCell.textContent = "xasdf";
     
     accountName.value = "";
 
