@@ -1,12 +1,9 @@
 
 body {
-    background-color:bisque; text-align:center; color:bisque
+    background-color:bisque; text-align:center; color:black
 }
 
 #addPretax {
-    position: relative;
-    top: 50px;
-    left: 50px;
     background-color: #4CAF50;
     color: white;
     font-size: 16px;
