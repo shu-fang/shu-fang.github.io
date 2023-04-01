@@ -22,3 +22,19 @@ body {
     float:right;
     width:30%;
 }
+
+.other-pages ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+.other-pages li {
+display: inline-block;
+font-size: 100px;
+margin-right: 20px;
+}
+
+.other-pages li:last-child {
+margin-right: 0;
+}
