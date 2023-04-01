@@ -13,7 +13,7 @@
                 <h2 id="pretax">Pre-tax Accounts</h2>
                 <table id="pretax-accounts"> 
                     <tr>
-                        <th>Input</th>
+                        <th>Accounts:</th>
                     </tr>
                 </table>
                 <div class="userInput"> 
@@ -31,7 +31,7 @@
         <script>
             function displayAccount() {
                 let accountName = document.querySelector("#accountName");
-                let pretax_account = document.querySelector("#pretax-account");
+                let pretax_account = document.querySelector("#pretax-accounts");
                 pretax_account.innerHTML = "<tr><td>" + accountName.value + "</td></tr>";
             }
         </script>
