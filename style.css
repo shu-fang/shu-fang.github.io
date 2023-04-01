@@ -40,7 +40,3 @@ body {
     font-size: 50px;
     margin-right: 10px;
 }
-
-.other-pages li:last-child {
-    margin-right: 0;
-}
