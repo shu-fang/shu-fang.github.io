@@ -37,27 +37,28 @@
         <!-- <script src="script.js"></script> -->
         <script>
             function displayAccount() {
+                let accountName = document.querySelector("#accountName").value;
+
                 // save to storage
                 let accounts = JSON.parse(localStorage.getItem("accounts")) || [];
-                let accountName = document.querySelector("#accountName");
-                accounts.push(accountName.value);
+                accounts.push(accountName);
                 localStorage.setItem("accounts", JSON.stringify(accounts));
                 
                 // add to accounts page
                 let pretax_accounts = document.querySelector("#pretax-accounts");
                 let newRow = pretax_accounts.insertRow();
                 let newCell = newRow.insertCell();
-                newCell.textContent = "xasdf";
+                newCell.textContent = accountName;
                 
-                accountName.value = "";
+                accountName = "";
 
-                // add to inputs page
-                const accountsTable = document.querySelector("#accounts-table");
-                accounts.forEach((account) => {
-                    const newRow = accountsTable.insertRow();
-                    const accountNameCell = newRow.insertCell(0);
-                    accountNameCell.innerHTML = account;
-                });
+                // // add to inputs page
+                // const accountsTable = document.querySelector("#accounts-table");
+                // accounts.forEach((account) => {
+                //     const newRow = accountsTable.insertRow();
+                //     const accountNameCell = newRow.insertCell(0);
+                //     accountNameCell.innerHTML = account;
+                // });
             }
         </script>
     </body>
