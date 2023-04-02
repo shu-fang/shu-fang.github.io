@@ -1,9 +1,7 @@
-from flask import Flask, render_template, request, flash, g, send_from_directory
+from flask import Flask, render_template, request, send_from_directory
 import sqlite3
-# from . import db
-from db import make_entries_table, delete_table
+from db import *
 from flask import jsonify
-# from jinja2 import Environment, FileSystemLoader
 
 app = Flask(__name__)
 
@@ -11,17 +9,9 @@ app = Flask(__name__)
 def serve_css(path):
     return send_from_directory('static/css', path)
 
-def db_connection():
-    conn = None
-    try:
-        conn = sqlite3.connect("accounts.sqlite")
-    except sqlite3.error as e:
-        print(e)
-    return conn
-
 @app.route('/')
 def index():
-    conn = db_connection()
+    conn = db_connection('accounts')
     cursor = conn.cursor()
     cursor.execute("SELECT name, balances FROM accounts")
     accounts_data = cursor.fetchall()
@@ -31,7 +21,7 @@ def index():
 
 @app.route('/get_pretax_accounts')
 def get_pretax_accounts():
-    conn = db_connection()
+    conn = db_connection('accounts')
     cursor = conn.cursor()
     cursor.execute("SELECT name FROM accounts WHERE tax_status = 'pre-tax'")
     accounts = cursor.fetchall()
@@ -45,34 +35,24 @@ def accounts():
 
 @app.route('/input', methods=['GET','POST'])
 def input():
-    conn = db_connection()
-    cursor = conn.cursor()
-    # update account balance
     if request.method == 'POST':
-        for account in request.form:
-            if account.startswith('balance--'):
-                name = account[9:]
-                balance = request.form[account]
-                if balance == "":
-                    balance = '0'
-                cursor.execute("UPDATE accounts SET balances=? WHERE name=?", (balance, name))
-                conn.commit()
+        update_account_balance(request)
 
-    cursor.execute("SELECT name, balances FROM accounts")
-    pretax_accounts = get_pretax_accounts()
-    conn.close()
-
-    entries_conn = sqlite3.connect('entries.sqlite')
-    cursor = entries_conn.cursor()
+    # get all entries 
+    conn = sqlite3.connect('entries.sqlite')
+    cursor = conn.cursor()
     cursor.execute('SELECT * FROM entries')
     entries = cursor.fetchall()
-    entries_conn.close()
+    conn.close()
+
+    # get pretax accounts
+    pretax_accounts = get_pretax_accounts()
     return render_template('input.html', pretax_accounts=pretax_accounts, entries=entries, cursor=cursor)
 
 @app.route('/submit', methods=['POST'])
 def submit():
     # insert new account into accounts database
-    conn = db_connection()
+    conn = db_connection('accounts')
     cursor = conn.cursor()
     new_name = request.form['accountName']
     new_type = "placeholder"
@@ -87,7 +67,7 @@ def submit():
     conn = sqlite3.connect('entries.sqlite')
     cursor = conn.cursor()
     # Construct a new SQL query to add a new column to the 'entries' table
-    sql_query = f"ALTER TABLE entries ADD COLUMN {new_name} TEXT DEFAULT '0'"
+    sql_query = f"ALTER TABLE entries ADD COLUMN '{new_name}' TEXT DEFAULT '0'"
     
     # Execute the SQL query and commit the changes to the database
     cursor.execute(sql_query)
@@ -97,7 +77,7 @@ def submit():
 
 @app.route('/clear', methods=['POST'])
 def clear():
-    conn = db_connection()
+    conn = db_connection('accounts')
     cursor = conn.cursor()
     cursor.execute("DELETE FROM accounts")
     conn.commit()
