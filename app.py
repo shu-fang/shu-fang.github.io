@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 import sqlite3
 import db
 from flask import jsonify
+from jinja2 import Environment, FileSystemLoader
 
 app = Flask(__name__)
 
@@ -24,7 +25,12 @@ def input():
 
 @app.route('/accounts')
 def accounts():
-    return render_template('accounts.html')
+    conn = db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT name FROM accounts WHERE tax_status = 'pre-tax'")
+    accounts = cursor.fetchall()
+    conn.close()
+    return render_template('accounts.html', pretax_accounts=accounts)
 
 @app.route('/submit', methods=['POST'])
 def submit():
@@ -32,12 +38,13 @@ def submit():
     cursor = conn.cursor()
     new_name = request.form['accountName']
     new_type = "placeholder"
-    new_tax_status = "placeholder"
+    new_tax_status = "pre-tax"
     sql = """INSERT INTO accounts (name, type, tax_status)
                 VALUES (?, ?, ?)"""
     cursor = cursor.execute(sql, (new_name, new_type, new_tax_status))
     conn.commit()
-    return render_template('accounts.html')
+    conn.close()
+    return jsonify({'name': new_name, 'type': new_type, 'tax_status': new_tax_status}), 200
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -1,50 +1,32 @@
 
 function displayAccount(event) {
-    event.preventDefault();
-    var frm = $('#accountForm')
-    $.ajax({
-        type: frm.attr('method'),
-        url: frm.attr('action'),
-        data: frm.serialize(),
-        success: function (data) {
-            console.log('Submission was successful.');
-            console.log(data);
-        },
-        error: function (data) {
-            console.log('An error occurred.');
-            console.log(data);
-        },
-    });
-    // save to storage
-    let accountName = document.querySelector("#accountName").value;
-
-    // add to accounts page
-    let pretax_accounts = document.querySelector("#pretax-accounts");
-    let newRow = pretax_accounts.insertRow();
-    let newCell = newRow.insertCell();
-    newCell.textContent = accountName;
-
-    // send AJAX request to Flask server
-    const xhr = new XMLHttpRequest();
-    xhr.open("POST", "/submit");
-    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    xhr.onload = function() {
-        if (xhr.status === 201) {
-            // add new account to accounts page
-            let account = JSON.parse(xhr.responseText).account;
-            let pretaxAccounts = document.querySelector("#pretax-accounts");
-            let newRow = pretaxAccounts.insertRow();
-            let newCell = newRow.insertCell();
-            newCell.textContent = account.name;
-
-            accountName.value = "";
+    // update table whenever submission
+    var form = event.target;
+    var data = new FormData(form);
+    fetch('/submit', {
+        method: 'POST',
+        body: data
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
         }
-    };
-    xhr.send(JSON.stringify({accountName: accountName.value}));
-
-    accountName = "";
+        return response.json();
+    })
+    .then(data => {
+        console.log("DATA:" + data);
+        var table = document.querySelector('#pretax-accounts');
+        var row = table.insertRow(-1);
+        var cell = row.insertCell(0);
+        cell.textContent = data.name;
+        form.reset();
+        let accountName = document.querySelector("#accountName");
+        accountName.value = "";
+    })
+    .catch(error => {
+        console.log(data);
+        console.log("error:", error);
+    });
+    // event.preventDefault();
     return false;
 }
-
-const form = document.querySelector('form');
-form.addEventListener('subnmit', displayAccount);

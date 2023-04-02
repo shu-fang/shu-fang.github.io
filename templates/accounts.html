@@ -22,12 +22,17 @@
                     <tr>
                         <th>Accounts:</th>
                     </tr>
+                    {% for account in pretax_accounts %}
+                    <tr>
+                        <td>{{ account[0] }}</td>
+                    </tr>
+                    {% endfor %}
                 </table>
                 <div class="userInput"> 
-                    <form method="POST" action="{{ url_for('submit')}}" id="accountForm">
+                    <form method="POST" action="{{ url_for('submit')}}" id="accountForm" onsubmit="return displayAccount(event)">
                         <label for="accountName">Add new account:</label>
                         <input type="text" id="accountName" name="accountName">
-                        <button id="addPretax" onsubmit="displayAccount(event)"> Submit </button>
+                        <button id="addPretax"> Submit </button>
                     </form>
                 </div>
             </div>
@@ -36,55 +41,6 @@
 
             </div>
         </div>
-        <script>
-            
-            function displayAccount(event) {
-                event.preventDefault();
-                var frm = $('#accountForm')
-                $.ajax({
-                    type: frm.attr('method'),
-                    url: frm.attr('action'),
-                    data: frm.serialize(),
-                    success: function (data) {
-                        console.log('Submission was successful.');
-                        console.log(data);
-                    },
-                    error: function (data) {
-                        console.log('An error occurred.');
-                        console.log(data);
-                    },
-                });
-                // save to storage
-                let accountName = document.querySelector("#accountName").value;
-
-                // add to accounts page
-                let pretax_accounts = document.querySelector("#pretax-accounts");
-                let newRow = pretax_accounts.insertRow();
-                let newCell = newRow.insertCell();
-                newCell.textContent = accountName;
-
-                // send AJAX request to Flask server
-                const xhr = new XMLHttpRequest();
-                xhr.open("POST", "/submit");
-                xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-                xhr.onload = function() {
-                    if (xhr.status === 201) {
-                        // add new account to accounts page
-                        let account = JSON.parse(xhr.responseText).account;
-                        let pretaxAccounts = document.querySelector("#pretax-accounts");
-                        let newRow = pretaxAccounts.insertRow();
-                        let newCell = newRow.insertCell();
-                        newCell.textContent = account.name;
-
-                        accountName.value = "";
-                    }
-                };
-                xhr.send(JSON.stringify({accountName: accountName.value}));
-
-                accountName = "";
-                return false;
-            }
-
-        </script>
+        <script src="{{ url_for('static', filename='js/script.js') }}"></script>
     </body>
 </html>
