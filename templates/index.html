@@ -7,16 +7,17 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="/static/css/style.css">
         <title>Wen's Budgeting Tool</title>
+        <div class="other-pages">
+            <ul>
+                <li><a href="{{ url_for('index') }}">Overview</a></li>
+                <li><a href="{{ url_for('input') }}">Input</a></li>
+                <li><a href="{{ url_for('accounts') }}">Accounts</a></li>
+            </ul>
+        </div>
     </head>
     <body>
-        <div class="wrapper">
-            <div class="other-pages">
-                <ul>
-                    <li><a href="{{ url_for('index') }}">Overview</a></li>
-                    <li><a href="{{ url_for('input') }}">Input</a></li>
-                    <li><a href="{{ url_for('accounts') }}">Accounts</a></li>
-                </ul>
-            </div>
+        <div class="key-metrics">
+            <h3>NetWorth: {{ total_balance }}</h3>
         </div>
         <table id="account-balances"> 
             <thead>

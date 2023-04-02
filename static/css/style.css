@@ -1,44 +1,66 @@
 
 body {
-    background-color:bisque;
+    background-color:whitesmoke;
     text-align:center;
     color:black;
-    font-size: 30px;
+    font-size: 24px;
 }
 
-#addPretax {
-    background-color:white;
-    color: black;
-    font-size: 16px;
-    padding: 10px 15px;
-    border: none;
+input[type=text] {
+    font-size: 20px;
+    color: #333;
+    padding: 8px 10px;
+    border: 1px solid #ccc;
     border-radius: 4px;
-    cursor: pointer;
-  }
+    width: 100%;
+    box-sizing: border-box;
+}
+
+button {
+    background-color:darkgreen;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+button:hover {
+    opacity: 0.8;
+}
 
 .pretax-element {
     float:left;
-    width:30%;
+    width:40%;
 }
 
 .posttax-element{
     float:right;
-    width:30%;
+    width:40%;
 }
 
 .other-pages {
-    display:flex;
+    display:inline-block;
     margin-right:20px;
+    padding: 20px 20px;
     text-align: left;
+    color:black;
 }
 
 .other-pages ul {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
     list-style-type: none;
     margin: 0;
     padding: 0;
-  }
+    width: 100%;
+}
   
 .other-pages li {
-    font-size: 50px;
+    font-size: 30px;
     margin-right: 10px;
 }
