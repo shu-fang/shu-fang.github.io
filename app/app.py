@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, flash, g
 import sqlite3
-import db
+import db as db
 from flask import jsonify
 # from jinja2 import Environment, FileSystemLoader
 
