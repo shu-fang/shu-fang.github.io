@@ -16,7 +16,6 @@ function displayAccount(event) {
         return response.json();
     })
     .then(data => {
-        console.log("DATA:" + data);
         var table = document.querySelector('#pretax-accounts');
         var row = table.insertRow(-1);
         var cell = row.insertCell(0);
@@ -26,7 +25,6 @@ function displayAccount(event) {
         accountName.value = "";
     })
     .catch(error => {
-        console.log(data);
         console.log("error:", error);
     });
     

@@ -18,5 +18,20 @@
                 </ul>
             </div>
         </div>
+        <table id="account-balances"> 
+            <thead>
+                <tr>
+                    <th>Latest Account Balances</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for account, balances in account_balances %}
+                    <tr>
+                        <td>{{ account }}</td>
+                        <td>{{ balances }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </body>
 </html>

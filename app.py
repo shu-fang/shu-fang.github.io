@@ -17,7 +17,11 @@ def db_connection():
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    conn = db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT name, balances FROM accounts")
+    accounts_data = cursor.fetchall()
+    return render_template('index.html', account_balances=accounts_data)
 
 @app.route('/get_pretax_accounts')
 def get_pretax_accounts():
@@ -33,8 +37,20 @@ def accounts():
     pretax_accounts = get_pretax_accounts()
     return render_template('accounts.html', pretax_accounts=pretax_accounts)
 
-@app.route('/input')
+@app.route('/input', methods=['GET','POST'])
 def input():
+    conn = db_connection()
+    cursor = conn.cursor()
+
+    if request.method == 'POST':
+        for account in request.form:
+            if account.startswith('balance--'):
+                name = account[9:]
+                balance = request.form[account]
+                cursor.execute("UPDATE accounts SET balances=? WHERE name=?", (balance, name))
+                conn.commit()
+
+    cursor.execute("SELECT name, balances FROM accounts")
     pretax_accounts = get_pretax_accounts()
     return render_template('input.html', pretax_accounts=pretax_accounts)
 
