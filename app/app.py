@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, flash, g, send_from_directory
 import sqlite3
 # from . import db
-import db
+from db import make_entries_table, delete_table
 from flask import jsonify
 # from jinja2 import Environment, FileSystemLoader
 
@@ -87,7 +87,7 @@ def submit():
     conn = sqlite3.connect('entries.sqlite')
     cursor = conn.cursor()
     # Construct a new SQL query to add a new column to the 'entries' table
-    sql_query = f"ALTER TABLE entries ADD COLUMN {new_name} REAL DEFAULT 0"
+    sql_query = f"ALTER TABLE entries ADD COLUMN {new_name} TEXT DEFAULT '0'"
     
     # Execute the SQL query and commit the changes to the database
     cursor.execute(sql_query)
@@ -102,6 +102,14 @@ def clear():
     cursor.execute("DELETE FROM accounts")
     conn.commit()
     conn.close()
+
+    conn = sqlite3.connect('entries.sqlite')
+    cursor = conn.cursor()
+
+    # retrieve the current column names
+    delete_table('entries')
+    make_entries_table()
+
     return "Database cleared", 200
 
 if __name__ == '__main__':
