@@ -1,4 +1,5 @@
 import sqlite3
+from datetime import date 
 
 def make_accounts_table():
     try:
@@ -24,8 +25,7 @@ def make_entries_table():
         cursor = conn.cursor()
 
         sql_query = """CREATE TABLE IF NOT EXISTS entries (
-            date DATE NOT NULL DEFAULT (DATE('now', 'localtime')),
-            balances TEXT NOT NULL DEFAULT "0"
+            date DATE NOT NULL DEFAULT (DATE('now', 'localtime'))
         )"""
 
         cursor.execute(sql_query)
@@ -52,19 +52,36 @@ def db_connection(table):
         print(e)
     return conn
 
+def add_entry(request):
+    conn = sqlite3.connect("entries.sqlite")
+    cursor = conn.cursor()
+
+    accounts = request.form
+    
+    # Construct the SQL query to insert a new row into the 'entries' table
+    columns = ', '.join(accounts.keys())
+    values = ', '.join(['?'] * len(accounts))
+    sql_query = f"INSERT INTO entries ({columns}, date) VALUES ({values}, ?)"
+    params = list(accounts.values()) + [date.today()]
+    # Execute the SQL query and commit the changes to the database
+    cursor.execute(sql_query, params)
+    conn.commit()
+    conn.close()
+
 def update_account_balance(request):
+    # update accounts table
     conn = db_connection('accounts')
     cursor = conn.cursor()
+    add_entry(request)
     # update account balance
     if request.method == 'POST':
         for account in request.form:
-            if account.startswith('balance--'):
-                name = account[9:]
-                balance = request.form[account]
-                if balance == "":
-                    balance = '0'
-                cursor.execute("UPDATE accounts SET balances=? WHERE name=?", (balance, name))
-                conn.commit()
+            name = account
+            balance = request.form[account]
+            if balance == "":
+                balance = '0'
+            cursor.execute("UPDATE accounts SET balances=? WHERE name=?", (balance, name))
+            conn.commit()
 
     cursor.execute("SELECT name, balances FROM accounts")
     conn.close()
