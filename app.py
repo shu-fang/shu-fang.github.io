@@ -1,9 +1,8 @@
 from flask import Flask, render_template, request, flash, g
-from flask_sqlalchemy import SQLAlchemy
 import sqlite3
 import app.db as db
 from flask import jsonify
-from jinja2 import Environment, FileSystemLoader
+# from jinja2 import Environment, FileSystemLoader
 
 app = Flask(__name__)
 
