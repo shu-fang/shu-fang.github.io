@@ -16,13 +16,15 @@
                     <li><a href="{{ url_for('accounts') }}">Accounts</a></li>
                 </ul>
             </div>
-            <table id="accounts">
-                <thread>
-                    <tr>
-                        <th> Accounts </th>
-                    </tr>
-                </thread>
-                <tbody id="accounts-table"></tbody>
+            <table id="pretax-accounts"> 
+                <tr>
+                    <th>Accounts:</th>
+                </tr>
+                {% for account in pretax_accounts %}
+                <tr>
+                    <td>{{ account[0] }}</td>
+                </tr>
+                {% endfor %}
             </table>
         </div>
         <script src="script.js"></script>

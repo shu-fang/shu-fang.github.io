@@ -19,18 +19,24 @@ def db_connection():
 def index():
     return render_template('index.html')
 
-@app.route('/input')
-def input():
-    return render_template('input.html')
-
-@app.route('/accounts')
-def accounts():
+@app.route('/get_pretax_accounts')
+def get_pretax_accounts():
     conn = db_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT name FROM accounts WHERE tax_status = 'pre-tax'")
     accounts = cursor.fetchall()
     conn.close()
-    return render_template('accounts.html', pretax_accounts=accounts)
+    return accounts
+
+@app.route('/accounts')
+def accounts():
+    pretax_accounts = get_pretax_accounts()
+    return render_template('accounts.html', pretax_accounts=pretax_accounts)
+
+@app.route('/input')
+def input():
+    pretax_accounts = get_pretax_accounts()
+    return render_template('input.html', pretax_accounts=pretax_accounts)
 
 @app.route('/submit', methods=['POST'])
 def submit():

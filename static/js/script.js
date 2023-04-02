@@ -1,6 +1,8 @@
 
 function displayAccount(event) {
-    // update table whenever submission
+    event.preventDefault();
+
+    // update table whenever new account is added
     var form = event.target;
     var data = new FormData(form);
     fetch('/submit', {
@@ -27,7 +29,7 @@ function displayAccount(event) {
         console.log(data);
         console.log("error:", error);
     });
-    event.preventDefault();
+    
     return false;
 }
 
