@@ -96,5 +96,19 @@ def clear():
 
     return "Database cleared", 200
 
+@app.route('/data')
+def data():
+    conn = db_connection('entries')
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM entries")
+    rows = cursor.fetchall()
+    conn.close()
+
+    columns = [desc[0] for desc in cursor.description]
+    data = []
+    for row in rows:
+        data.append(dict(zip(columns, row)))
+    return jsonify(data)
+
 if __name__ == '__main__':
     app.run(debug=True)

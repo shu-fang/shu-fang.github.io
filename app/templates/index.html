@@ -7,6 +7,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" type="text/css" href="{{ url_for('serve_css', path='style.css') }}">
         <title>Wen's Budgeting Tool</title>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <div class="other-pages">
             <ul>
                 <li><a href="{{ url_for('index') }}">Overview</a></li>
@@ -15,7 +16,7 @@
             </ul>
         </div>
     </head>
-    <body>
+    <body onload="createChart()">
         <div class="key-metrics">
             <h3>NetWorth: {{ total_balance }}</h3>
         </div>
@@ -34,5 +35,7 @@
                 {% endfor %}
             </tbody>
         </table>
+        <canvas id="posttax-balance-chart"></canvas>
     </body>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </html>

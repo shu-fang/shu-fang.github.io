@@ -46,3 +46,28 @@ function clearDatabase() {
         console.log("clear database error:", error);
     })
 }
+
+fetch('/data')
+  .then(response => response.json())
+  .then(data => {
+    // Extract the dates and balances from the data
+    const dates = data.map(entry => entry[2]);
+    const balances = data.map(entry => entry[3]);
+  
+    // Create a new Chart.js chart using the retrieved data
+    const ctx = document.getElementById('posttax-balance-chart').getContext('2d');
+    const chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: balances,
+        datasets: [{
+          label: 'Posttax Account Balance',
+          data: dates,
+          yAxisID: 'y-axis-0',
+          fill: false,
+          borderColor: 'rgb(75, 192, 192)',
+          tension: 0.1
+        }]
+      }
+    });
+});
