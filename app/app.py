@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, flash, g
 import sqlite3
-from . import db
+# from . import db
+import db
 from flask import jsonify
 # from jinja2 import Environment, FileSystemLoader
 
@@ -48,6 +49,8 @@ def input():
             if account.startswith('balance--'):
                 name = account[9:]
                 balance = request.form[account]
+                if balance == "":
+                    balance = '0'
                 cursor.execute("UPDATE accounts SET balances=? WHERE name=?", (balance, name))
                 conn.commit()
 
