@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, send_from_directory
 import sqlite3
-from db import *
+from . import db
 from flask import jsonify
 
 app = Flask(__name__)
