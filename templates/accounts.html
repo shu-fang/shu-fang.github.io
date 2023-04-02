@@ -11,9 +11,9 @@
         <div class="wrapper">
             <div class="other-pages">
                 <ul>
-                    <li><a href="index.html"> Overview </a></li>
-                    <li><a href="input.html">Input</a></li>
-                    <li><a href="accounts.html">Accounts</a></li>
+                    <li><a href="{{ url_for('index') }}">Overview</a></li>
+                    <li><a href="{{ url_for('input') }}">Input</a></li>
+                    <li><a href="{{ url_for('accounts') }}">Accounts</a></li>
                 </ul>
             </div>
             <div class="pretax-element">
@@ -24,9 +24,11 @@
                     </tr>
                 </table>
                 <div class="userInput"> 
-                    <label for="accountName">Add new account:</label>
-                    <input type="text" id="accountName" name="accountName">
-                    <button id="addPretax" onclick="displayAccount()"> Submit </button>
+                    <form method="POST" action="{{ url_for('submit')}}" id="accountForm">
+                        <label for="accountName">Add new account:</label>
+                        <input type="text" id="accountName" name="accountName">
+                        <button id="addPretax" onsubmit="displayAccount(event)"> Submit </button>
+                    </form>
                 </div>
             </div>
             <div class="posttax-element">
@@ -34,32 +36,55 @@
 
             </div>
         </div>
-        <!-- <script src="script.js"></script> -->
         <script>
-            function displayAccount() {
+            
+            function displayAccount(event) {
+                event.preventDefault();
+                var frm = $('#accountForm')
+                $.ajax({
+                    type: frm.attr('method'),
+                    url: frm.attr('action'),
+                    data: frm.serialize(),
+                    success: function (data) {
+                        console.log('Submission was successful.');
+                        console.log(data);
+                    },
+                    error: function (data) {
+                        console.log('An error occurred.');
+                        console.log(data);
+                    },
+                });
+                // save to storage
                 let accountName = document.querySelector("#accountName").value;
 
-                // save to storage
-                let accounts = JSON.parse(localStorage.getItem("accounts")) || [];
-                accounts.push(accountName);
-                localStorage.setItem("accounts", JSON.stringify(accounts));
-                
                 // add to accounts page
                 let pretax_accounts = document.querySelector("#pretax-accounts");
                 let newRow = pretax_accounts.insertRow();
                 let newCell = newRow.insertCell();
                 newCell.textContent = accountName;
-                
-                accountName = "";
 
-                // // add to inputs page
-                // const accountsTable = document.querySelector("#accounts-table");
-                // accounts.forEach((account) => {
-                //     const newRow = accountsTable.insertRow();
-                //     const accountNameCell = newRow.insertCell(0);
-                //     accountNameCell.innerHTML = account;
-                // });
+                // send AJAX request to Flask server
+                const xhr = new XMLHttpRequest();
+                xhr.open("POST", "/submit");
+                xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+                xhr.onload = function() {
+                    if (xhr.status === 201) {
+                        // add new account to accounts page
+                        let account = JSON.parse(xhr.responseText).account;
+                        let pretaxAccounts = document.querySelector("#pretax-accounts");
+                        let newRow = pretaxAccounts.insertRow();
+                        let newCell = newRow.insertCell();
+                        newCell.textContent = account.name;
+
+                        accountName.value = "";
+                    }
+                };
+                xhr.send(JSON.stringify({accountName: accountName.value}));
+
+                accountName = "";
+                return false;
             }
+
         </script>
     </body>
 </html>
