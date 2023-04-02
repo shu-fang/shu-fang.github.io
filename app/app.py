@@ -72,7 +72,6 @@ def submit():
     cursor = conn.cursor()
     # Construct a new SQL query to add a new column to the 'entries' table
     sql_query = f"ALTER TABLE entries ADD COLUMN '{new_name}' TEXT DEFAULT '0'"
-    
     # Execute the SQL query and commit the changes to the database
     cursor.execute(sql_query)
     conn.commit()

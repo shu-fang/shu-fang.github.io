@@ -52,18 +52,24 @@ def db_connection(table):
         print(e)
     return conn
 
+def format_balance(balance):
+    if not balance.isdigit():
+        balance = '0'
+    else:
+        balance = str(int(balance))
+    return balance 
+
 def add_entry(request):
     conn = sqlite3.connect("entries.sqlite")
+    
     cursor = conn.cursor()
-
     accounts = request.form
     
     # Construct the SQL query to insert a new row into the 'entries' table
-    columns = ', '.join(accounts.keys())
+    columns = [f"`{col}`" for col in accounts.keys()]
     values = ', '.join(['?'] * len(accounts))
-    sql_query = f"INSERT INTO entries ({columns}, date) VALUES ({values}, ?)"
-    params = list(accounts.values()) + [date.today()]
-    print(list(accounts.values()))
+    sql_query = f"INSERT INTO entries ({', '.join(columns)}, date) VALUES ({values}, ?)"
+    params = [format_balance(value) for value in accounts.values()] + [date.today()]
     # Execute the SQL query and commit the changes to the database
     cursor.execute(sql_query, params)
     conn.commit()
@@ -73,14 +79,14 @@ def update_account_balance(request):
     # update accounts table
     conn = db_connection('accounts')
     cursor = conn.cursor()
+
     add_entry(request)
     # update account balance
     if request.method == 'POST':
         for account in request.form:
             name = account
-            balance = request.form[account]
-            if balance == "":
-                balance = '0'
+            balance = format_balance(request.form[account])
+            
             cursor.execute("UPDATE accounts SET balances=? WHERE name=?", (balance, name))
             conn.commit()
 

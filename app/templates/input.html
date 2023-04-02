@@ -49,8 +49,9 @@
             <tbody>
                 {% for entry in entries %}
                 <tr>
-                    <td>{{ entry[0] }}</td>
-                    <td>{{ entry[1] }}</td>
+                    {% for balance in entry %}
+                    <td> {{balance}} </td>
+                    {% endfor %}
                 </tr>
                 {% endfor %}
             </tbody>
