@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, send_from_directory
 import sqlite3
-from db import db_connection, delete_table, make_entries_table, update_account_balance
+from .db import db_connection, delete_table, make_entries_table, update_account_balance
 
 from flask import jsonify
 
