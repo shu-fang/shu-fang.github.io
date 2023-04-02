@@ -27,6 +27,22 @@ function displayAccount(event) {
         console.log(data);
         console.log("error:", error);
     });
-    // event.preventDefault();
+    event.preventDefault();
     return false;
+}
+
+function clearDatabase() {
+    event.preventDefault();
+    fetch('/clear', {
+        method: 'POST'
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        window.location.reload();
+    })
+    .catch(error => {
+        console.log("clear database error:", error);
+    })
 }

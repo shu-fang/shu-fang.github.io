@@ -38,8 +38,10 @@
             </div>
             <div class="posttax-element">
                 <h2 id="pretax">Post-tax Accounts</h2>
-
             </div>
+            <form method="POST" action="{{ url_for('clear')}}" onsubmit="return clearDatabase()">
+                <button type="submit">Clear</button>
+            </form>
         </div>
         <script src="{{ url_for('static', filename='js/script.js') }}"></script>
     </body>

@@ -46,5 +46,14 @@ def submit():
     conn.close()
     return jsonify({'name': new_name, 'type': new_type, 'tax_status': new_tax_status}), 200
 
+@app.route('/clear', methods=['POST'])
+def clear():
+    conn = db_connection()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM accounts")
+    conn.commit()
+    conn.close()
+    return "Database cleared", 200
+
 if __name__ == '__main__':
     app.run(debug=True)
