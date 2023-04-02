@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, flash, g, send_from_directory
 import sqlite3
-# from . import db
-import db
+from . import db
+# import db
 from flask import jsonify
 # from jinja2 import Environment, FileSystemLoader
 
