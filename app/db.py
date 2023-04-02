@@ -63,6 +63,7 @@ def add_entry(request):
     values = ', '.join(['?'] * len(accounts))
     sql_query = f"INSERT INTO entries ({columns}, date) VALUES ({values}, ?)"
     params = list(accounts.values()) + [date.today()]
+    print(list(accounts.values()))
     # Execute the SQL query and commit the changes to the database
     cursor.execute(sql_query, params)
     conn.commit()
@@ -85,5 +86,6 @@ def update_account_balance(request):
 
     cursor.execute("SELECT name, balances FROM accounts")
     conn.close()
+
 make_entries_table()
 make_accounts_table()

@@ -29,15 +29,34 @@
                     {% endfor %}
                 </table>
                 <div class="userInput"> 
-                    <form method="POST" action="{{ url_for('submit')}}" id="accountForm" onsubmit="return displayAccount(event)">
+                    <form method="POST" action="{{ url_for('submit')}}" id="accountForm" onsubmit="return displayAccount(event, 'pretax-accounts')">
                         <label for="accountName">Add new account:</label>
                         <input type="text" id="accountName" name="accountName">
+                        <input type="hidden" name="tax_status" value="pre-tax">
                         <button id="addPretax"> Submit </button>
                     </form>
                 </div>
             </div>
             <div class="posttax-element">
                 <h2 id="posttax">Post-tax Accounts</h2>
+                <table id="posttax-accounts"> 
+                    <tr>
+                        <th>Accounts:</th>
+                    </tr>
+                    {% for account in posttax_accounts %}
+                    <tr>
+                        <td>{{ account[0] }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                <div class="userInput"> 
+                    <form method="POST" action="{{ url_for('submit')}}" id="accountForm" onsubmit="return displayAccount(event, 'posttax-accounts')">
+                        <label for="accountName">Add new account:</label>
+                        <input type="text" id="accountName" name="accountName">
+                        <input type="hidden" name="tax_status" value="post-tax">
+                        <button id="addPostTax"> Submit </button>
+                    </form>
+                </div>
             </div>
             <form method="POST" action="{{ url_for('clear')}}" onsubmit="return clearDatabase()">
                 <button type="submit">Clear</button>

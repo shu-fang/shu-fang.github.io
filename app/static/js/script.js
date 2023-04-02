@@ -1,5 +1,5 @@
 
-function displayAccount(event) {
+function displayAccount(event, tableid) {
     event.preventDefault();
 
     // update table whenever new account is added
@@ -16,7 +16,7 @@ function displayAccount(event) {
         return response.json();
     })
     .then(data => {
-        var table = document.querySelector('#pretax-accounts');
+        var table = document.querySelector(`#${tableid}`);
         var row = table.insertRow(-1);
         var cell = row.insertCell(0);
         cell.textContent = data.name;

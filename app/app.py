@@ -20,18 +20,19 @@ def index():
     return render_template('index.html', account_balances=accounts_data, total_balance=total_balance)
 
 @app.route('/get_pretax_accounts')
-def get_pretax_accounts():
+def get_pretax_accounts(tax_status):
     conn = db_connection('accounts')
     cursor = conn.cursor()
-    cursor.execute("SELECT name FROM accounts WHERE tax_status = 'pre-tax'")
+    cursor.execute("SELECT name FROM accounts WHERE tax_status = '" + tax_status + "'")
     accounts = cursor.fetchall()
     conn.close()
     return accounts
 
 @app.route('/accounts')
 def accounts():
-    pretax_accounts = get_pretax_accounts()
-    return render_template('accounts.html', pretax_accounts=pretax_accounts)
+    pretax_accounts = get_pretax_accounts('pre-tax')
+    posttax_accounts = get_pretax_accounts('post-tax')
+    return render_template('accounts.html', pretax_accounts=pretax_accounts, posttax_accounts = posttax_accounts)
 
 @app.route('/input', methods=['GET','POST'])
 def input():
@@ -46,7 +47,7 @@ def input():
     conn.close()
 
     # get pretax accounts
-    pretax_accounts = get_pretax_accounts()
+    pretax_accounts = get_pretax_accounts("pre-tax")
     return render_template('input.html', pretax_accounts=pretax_accounts, entries=entries, cursor=cursor)
 
 @app.route('/submit', methods=['POST'])
@@ -56,7 +57,7 @@ def submit():
     cursor = conn.cursor()
     new_name = request.form['accountName']
     new_type = "placeholder"
-    new_tax_status = "pre-tax"
+    new_tax_status = request.form['tax_status']
     sql = """INSERT INTO accounts (name, type, tax_status)
                 VALUES (?, ?, ?)"""
     cursor = cursor.execute(sql, (new_name, new_type, new_tax_status))
