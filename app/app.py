@@ -45,6 +45,12 @@ def accounts():
 
 @app.route('/input', methods=['GET','POST'])
 def input():
+    conn = sqlite3.connect('entries.sqlite')
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM entries')
+    entries = cursor.fetchall()
+    conn.close()
+
     conn = db_connection()
     cursor = conn.cursor()
 
@@ -60,7 +66,7 @@ def input():
 
     cursor.execute("SELECT name, balances FROM accounts")
     pretax_accounts = get_pretax_accounts()
-    return render_template('input.html', pretax_accounts=pretax_accounts)
+    return render_template('input.html', pretax_accounts=pretax_accounts, entries=entries)
 
 @app.route('/submit', methods=['POST'])
 def submit():
