@@ -18,7 +18,8 @@
     </head>
     <body onload="createChart()">
         <div class="key-metrics">
-            <h3>NetWorth: {{ total_balance }}</h3>
+            <h3>Pretax NetWorth: {{ pretax_balance }}</h3>
+            <h3>Posttax NetWorth: {{ posttax_balance }}</h3>
         </div>
         <table id="account-balances"> 
             <thead>
@@ -27,7 +28,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for account, balances in account_balances %}
+                {% for account, balances, _ in account_balances %}
                     <tr>
                         <td>{{ account }}</td>
                         <td>{{ balances }}</td>

@@ -14,11 +14,12 @@ def serve_css(path):
 def index():
     conn = db_connection('accounts')
     cursor = conn.cursor()
-    cursor.execute("SELECT name, balances FROM accounts")
+    cursor.execute("SELECT name, balances, tax_status FROM accounts")
     accounts_data = cursor.fetchall()
 
-    total_balance = sum([int(balance) for _, balance in accounts_data if balance.isdigit()])
-    return render_template('index.html', account_balances=accounts_data, total_balance=total_balance)
+    pretax_balance = sum([int(balance) for _, balance, tax_status in accounts_data if balance.isdigit() and tax_status == 'pre-tax'])
+    posttax_balance = sum([int(balance) for _, balance, tax_status in accounts_data if balance.isdigit() and tax_status == 'post-tax'])
+    return render_template('index.html', account_balances=accounts_data, pretax_balance=pretax_balance, posttax_balance=posttax_balance)
 
 @app.route('/get_pretax_accounts')
 def get_pretax_accounts(tax_status):
