@@ -16,7 +16,7 @@ def index():
     cursor.execute("SELECT name, balances FROM accounts")
     accounts_data = cursor.fetchall()
 
-    total_balance = sum([int(balance) for _, balance in accounts_data])
+    total_balance = sum([int(balance) for _, balance in accounts_data if balance.isdigit()])
     return render_template('index.html', account_balances=accounts_data, total_balance=total_balance)
 
 @app.route('/get_pretax_accounts')
@@ -48,7 +48,10 @@ def input():
 
     # get pretax accounts
     pretax_accounts = get_pretax_accounts("pre-tax")
-    return render_template('input.html', pretax_accounts=pretax_accounts, entries=entries, cursor=cursor)
+    print("pretax:", pretax_accounts)
+    print("enm:", entries)
+    posttax_accounts = get_pretax_accounts("post-tax")
+    return render_template('input.html', pretax_accounts=pretax_accounts, posttax_accounts=posttax_accounts, entries=entries, cursor=cursor)
 
 @app.route('/submit', methods=['POST'])
 def submit():

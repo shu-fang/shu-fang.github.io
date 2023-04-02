@@ -16,11 +16,20 @@
     </head>
     <body>
         <form method="POST">
-            <table id="pretax-accounts"> 
+            <table id="balance_input_table"> 
                 <tr>
-                    <th>Accounts:</th>
+                    <th>Pretax Accounts:</th>
                 </tr>
                 {% for account in pretax_accounts %}
+                <tr>
+                    <td>{{ account[0] }}</td>
+                    <td><input type="text" name="{{ account[0] }}" value="{{ account[3]|default('0') }}" id="{{ account[0] }}"></td>
+                </tr>
+                {% endfor %}
+                <tr>
+                    <th>Posttax Accounts:</th>
+                </tr>
+                {% for account in posttax_accounts %}
                 <tr>
                     <td>{{ account[0] }}</td>
                     <td><input type="text" name="{{ account[0] }}" value="{{ account[3]|default('0') }}" id="{{ account[0] }}"></td>
