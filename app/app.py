@@ -21,7 +21,7 @@ def index():
     cursor.execute("SELECT name, balances FROM accounts")
     accounts_data = cursor.fetchall()
 
-    total_balance = sum([balance for _, balance in accounts_data])
+    total_balance = sum([int(balance) for _, balance in accounts_data])
     return render_template('index.html', account_balances=accounts_data, total_balance=total_balance)
 
 @app.route('/get_pretax_accounts')
