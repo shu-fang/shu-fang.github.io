@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, flash, g
+from flask import Flask, render_template, request, flash, g, send_from_directory
 import sqlite3
 # from . import db
 import db
@@ -6,6 +6,10 @@ from flask import jsonify
 # from jinja2 import Environment, FileSystemLoader
 
 app = Flask(__name__)
+
+@app.route('/static/css/<path:path>')
+def serve_css(path):
+    return send_from_directory('static/css', path)
 
 def db_connection():
     conn = None
