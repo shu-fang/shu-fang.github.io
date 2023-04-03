@@ -22,11 +22,11 @@
                 </tr>
                 <tr>
                     <td>Income</td>
-                    <td><input type="text" name="income" value="" id="income"></td>
+                    <td><input type="number" name="income" value=0 id="income"></td>
                 </tr>
                 <tr>
                     <td>New Investments</td>
-                    <td><input type="text" name="new_investments" value="" id="new_investments"></td>
+                    <td><input type="number" name="new_investments" value=0 id="new_investments"></td>
                 </tr>
                 {% for account in posttax_accounts %}
                 <tr>
@@ -40,7 +40,6 @@
                 </tr>
             </table>
         </form>
-
         <form method="POST">
             <table id="pretax_balance_input_table">
                 <tr>

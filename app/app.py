@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, send_from_directory
 import sqlite3
-from .db import EntriesDatabase, AccountsDatabase
+from .db import PretaxEntriesTable, PosttaxEntriesTable, AccountsDatabase
 from datetime import datetime
 from flask import jsonify
 
@@ -11,7 +11,8 @@ def serve_css(path):
     return send_from_directory('static/css', path)
 
 accounts_db = AccountsDatabase()
-entries_db = EntriesDatabase()
+pretax_entries_table = PretaxEntriesTable()
+posttax_entries_table = PosttaxEntriesTable
 
 @app.route('/')
 def index():

@@ -122,24 +122,25 @@ class AccountsDatabase(Database):
         self.delete_table()
         self.make_table()
 
+
+    
 class EntriesDatabase(Database):
-    def __init__(self):
-        name = "entries"
+    def __init__(self, name, columns = []):
         super().__init__(name)
+        self.columns = columns
         self.make_table()
 
-    def make_table(self):
+    def make_table(self, ):
         return super().make_table([
             "date DATE NOT NULL DEFAULT (DATE('now', 'localtime'))",
-            "income INTEGER NOT NULL DEFAULT 0",
-            "new_investment INTEGER NOT NULL DEFAULT 0"
+            *self.columns
         ])
     
     def add_column(self, request):
         conn = self.db_connection()
         cursor = conn.cursor()
         # Construct a new SQL query to add a new column to the 'entries' table
-        sql_query = f"ALTER TABLE entries ADD COLUMN '{request.form['accountName']}' TEXT DEFAULT '0'"
+        sql_query = f"ALTER TABLE entries ADD COLUMN '{request.form['accountName']}' INTEGER DEFAULT 0"
         # Execute the SQL query and commit the changes to the database
         cursor.execute(sql_query)
         conn.commit()
@@ -165,4 +166,15 @@ class EntriesDatabase(Database):
 
     def wipe_table(self):
         self.delete_table()
-        self.make_table()
+        self.make_table(self.columns)
+
+class PretaxEntriesTable(EntriesDatabase):
+    def __init__(self):
+        super().__init__("PretaxEntries", [
+            "income INTEGER NOT NULL DEFAULT 0",
+            "new_investment INTEGER NOT NULL DEFAULT 0"
+        ])
+
+class PretaxEntriesTable(EntriesDatabase):
+    def __init__(self):
+        super().__init__("PosttaxEntries")

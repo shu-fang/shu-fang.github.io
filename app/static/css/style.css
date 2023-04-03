@@ -10,7 +10,7 @@ a:visited {
     text-decoration: none; 
     color: rgb(105, 104, 102); 
    }
-input[type=text] {
+input {
     font-size: 20px;
     color: #333;
     padding: 8px 10px;
