@@ -37,8 +37,8 @@ def input():
     entries = cursor.fetchall()
     conn.close()
 
-    current_date = datetime.today().strftime('%Y-%m-%d')
-    return render_template('input.html', current_date=current_date, 
+    return render_template('input.html', 
+                           current_date=datetime.today().strftime('%Y-%m-%d'), 
                            pretax_accounts=accounts_db.get_accounts("pre-tax"), 
                            posttax_accounts=accounts_db.get_accounts("post-tax"), 
                            entries=entries, cursor=cursor)

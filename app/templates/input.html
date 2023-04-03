@@ -16,7 +16,7 @@
     </head>
     <body>
         <form method="POST">
-            <table id="balance_input_table"> 
+            <table id="posttax_balance_input_table"> 
                 <tr>
                     <th>Posttax Accounts:</th>
                 </tr>
@@ -35,6 +35,15 @@
                 </tr>
                 {% endfor %}
                 <tr>
+                    <td><input type="date" name="entry_date" value="{{ current_date }}"></td>
+                    <td><button type="submit" name="posttax_submit">Submit</button></td>
+                </tr>
+            </table>
+        </form>
+
+        <form method="POST">
+            <table id="pretax_balance_input_table">
+                <tr>
                     <th>Pretax Accounts:</th>
                 </tr>
                 {% for account in pretax_accounts %}
@@ -44,9 +53,11 @@
                     
                 </tr>
                 {% endfor %}
+                <tr>
+                    <td><input type="date" name="entry_date" value="{{ current_date }}"></td>
+                    <td><button type="submit" name="pretax_submit">Submit</button></td>
+                </tr>
             </table>
-            <input type="date" name="entry_date" value="{{ current_date }}">
-            <button type="submit">Submit</button>
         </form>
         <table>
             <thead>
