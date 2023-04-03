@@ -31,7 +31,6 @@ def input():
         accounts_db.update_account_balance(request)
         if 'posttax_submit' in request.form:
             posttax_entries_table.add_entry(request)
-            print("Added posttax entries")
         elif 'pretax_submit' in request.form:
             pretax_entries_table.add_entry(request)
         else:
@@ -43,7 +42,6 @@ def input():
     post_cursor.execute(f'SELECT * FROM {posttax_entries_table.get_table_name()}')
     
     posttax_entries = post_cursor.fetchall()
-    print("content:", posttax_entries)
     conn.close()
 
     conn = pretax_entries_table.db_connection()
@@ -51,7 +49,6 @@ def input():
     pre_cursor.execute(f'SELECT * FROM {pretax_entries_table.get_table_name()}')
     pretax_entries = pre_cursor.fetchall()
     conn.close()
-    print("posttax entries:", posttax_entries)
     return render_template('input.html', 
                            current_date=datetime.today().strftime('%Y-%m-%d'), 
                            pretax_accounts=accounts_db.get_accounts("pre-tax"), 
