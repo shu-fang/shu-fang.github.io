@@ -104,3 +104,15 @@ button:hover {
 h3, h4, th {
     padding-left: 20px;
 }
+
+.chart-container {
+    position: absolute;
+    right: 10px;
+    top: 370px;
+    width: 50%;
+    height: 30%;
+    border: 1px solid rgba(0, 0, 0, 0);
+    border-radius:25px;
+    padding: 10px;
+    background-color: rgb(225, 245, 231);
+}
