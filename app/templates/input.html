@@ -26,7 +26,7 @@
                 </tr>
                 <tr>
                     <td>New Investments</td>
-                    <td><input type="number" name="new_investments" value=0 id="new_investments"></td>
+                    <td><input type="number" name="new_investment" value=0 id="new_investment"></td>
                 </tr>
                 {% for account in posttax_accounts %}
                 <tr>
@@ -67,7 +67,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for entry in entries %}
+                {% for entry in posttax_entries %}
                 <tr>
                     {% for balance in entry %}
                     <td> {{balance}} </td>

@@ -37,17 +37,17 @@ def input():
             print("WARNING: request from input page not recognized")
 
     # get all entries 
-    conn = pretax_entries_table.db_connection()
+    conn = posttax_entries_table.db_connection()
     cursor = conn.cursor()
-    cursor.execute('SELECT * FROM entries')
-    entries = cursor.fetchall()
+    cursor.execute('SELECT * FROM PosttaxEntries')
+    posttax_entries = cursor.fetchall()
     conn.close()
 
     return render_template('input.html', 
                            current_date=datetime.today().strftime('%Y-%m-%d'), 
                            pretax_accounts=accounts_db.get_accounts("pre-tax"), 
                            posttax_accounts=accounts_db.get_accounts("post-tax"), 
-                           entries=entries, cursor=cursor)
+                           posttax_entries=posttax_entries, cursor=cursor)
 
 @app.route('/submit', methods=['POST'])
 def submit():

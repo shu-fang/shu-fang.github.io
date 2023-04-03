@@ -8,13 +8,13 @@ class Database:
     
     def make_table(self, fields):
         try:
-            conn = sqlite3.connect(self.name)
+            conn = self.db_connection()
             cursor = conn.cursor()
 
             sql_query = f"""CREATE TABLE IF NOT EXISTS {self.name} (
                 {', '.join(fields)}
             )"""
-
+            print("added fields:", fields)
             cursor.execute(sql_query)
             conn.commit()
             conn.close()
@@ -83,11 +83,18 @@ class AccountsDatabase(Database):
         cursor = conn.cursor()
 
         # update account balance
-        latest_date = cursor.execute("SELECT MAX(date) FROM entries").fetchone()[0]
+        
+        table = ""
+        if 'pretax_submit' in request.form:
+            table = "PretaxEntries"
+        elif 'posttax_submit' in request.form:
+            table = "PosttaxEntries"
+        else:
+            print("WARNING: request form not recognized")
+        latest_date = cursor.execute(f"SELECT MAX(date) FROM {table}").fetchone()[0]
         
         entry_date = request.form['entry_date']
-        print("latest date:", latest_date, entry_date, latest_date <= entry_date)
-        if request.method == 'POST' and entry_date >= latest_date:
+        if request.method == 'POST' and (not latest_date or entry_date >= latest_date):
             for account in request.form:
                 name = account
                 balance = self.format_balance(request.form[account])
@@ -120,15 +127,13 @@ class AccountsDatabase(Database):
         self.delete_table()
         self.make_table()
 
-
-    
 class EntriesDatabase(Database):
     def __init__(self, name, columns = []):
         super().__init__(name)
         self.columns = columns
         self.make_table()
 
-    def make_table(self, ):
+    def make_table(self):
         return super().make_table([
             "date DATE NOT NULL DEFAULT (DATE('now', 'localtime'))",
             *self.columns
@@ -138,23 +143,23 @@ class EntriesDatabase(Database):
         conn = self.db_connection()
         cursor = conn.cursor()
         # Construct a new SQL query to add a new column to the 'entries' table
-        sql_query = f"ALTER TABLE entries ADD COLUMN '{request.form['accountName']}' INTEGER DEFAULT 0"
+        sql_query = f"ALTER TABLE {self.name} ADD COLUMN '{request.form['accountName']}' INTEGER DEFAULT 0"
         # Execute the SQL query and commit the changes to the database
         cursor.execute(sql_query)
         conn.commit()
         conn.close()
 
     def add_entry(self, request):
-        conn = sqlite3.connect("database.sqlite")
-        
+        conn = self.db_connection()
         cursor = conn.cursor()
-        accounts = {key: value for key, value in request.form.items() if key != 'entry_date'}
+        accounts = {key: value for key, value in request.form.items() if key not in ['entry_date', 'posttax_submit', 
+                                                                                     'pretax_submit']}
         entry_date = request.form['entry_date']
-
         # Construct the SQL query to insert a new row into the 'entries' table
         columns = [f"`{col}`" for col in accounts.keys()]
+        print("columns:", columns)
         values = ', '.join(['?'] * len(accounts))
-        sql_query = f"INSERT INTO entries ({', '.join(columns)}, date) VALUES ({values}, ?)"
+        sql_query = f"INSERT INTO {self.name} ({', '.join(columns)}, date) VALUES ({values}, ?)"
         params = [self.format_balance(value) for value in accounts.values()] + [entry_date]
 
         # Execute the SQL query and commit the changes to the database
@@ -164,15 +169,14 @@ class EntriesDatabase(Database):
 
     def wipe_table(self):
         self.delete_table()
-        self.make_table(self.columns)
+        self.make_table()
 
 class PretaxEntriesTable(EntriesDatabase):
     def __init__(self):
-        super().__init__("PretaxEntries", [
-            "income INTEGER NOT NULL DEFAULT 0",
-            "new_investment INTEGER NOT NULL DEFAULT 0"
-        ])
+        super().__init__("PretaxEntries")
 
 class PosttaxEntriesTable(EntriesDatabase):
     def __init__(self):
-        super().__init__("PosttaxEntries")
+        super().__init__("PosttaxEntries", 
+                         ["income INTEGER NOT NULL DEFAULT 0",
+                            "new_investment INTEGER NOT NULL DEFAULT 0"])
