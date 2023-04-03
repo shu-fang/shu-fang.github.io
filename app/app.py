@@ -12,7 +12,7 @@ def serve_css(path):
 
 accounts_db = AccountsDatabase()
 pretax_entries_table = PretaxEntriesTable()
-posttax_entries_table = PosttaxEntriesTable
+posttax_entries_table = PosttaxEntriesTable()
 
 @app.route('/')
 def index():
@@ -29,10 +29,15 @@ def accounts():
 def input():
     if request.method == 'POST':
         accounts_db.update_account_balance(request)
-        entries_db.add_entry(request)
+        if 'posttax_submit' in request.form:
+            posttax_entries_table.add_entry(request)
+        elif 'pretax_submit' in request.form:
+            pretax_entries_table.add_entry(request)
+        else:
+            print("WARNING: request from input page not recognized")
 
     # get all entries 
-    conn = entries_db.db_connection()
+    conn = pretax_entries_table.db_connection()
     cursor = conn.cursor()
     cursor.execute('SELECT * FROM entries')
     entries = cursor.fetchall()
@@ -48,14 +53,19 @@ def input():
 def submit():
     # insert new account into accounts database
     accounts_db.add_account(request)
-    entries_db.add_column(request)
+    tax_status = request.form['tax_status']
+    if tax_status == 'pre-tax':
+        pretax_entries_table.add_column(request)
+    else:
+        posttax_entries_table.add_column(request)
     new_type = "placeholder"
-    return jsonify({'name': request.form['accountName'], 'type': new_type, 'tax_status': request.form['tax_status']}), 200
+    return jsonify({'name': request.form['accountName'], 'type': new_type, 'tax_status': tax_status}), 200
 
 @app.route('/clear', methods=['POST'])
 def clear():
     accounts_db.wipe_table()
-    entries_db.wipe_table()
+    pretax_entries_table.wipe_table()
+    posttax_entries_table.wipe_table()
     return "Database cleared", 200
 
 @app.route('/data')
@@ -66,13 +76,13 @@ def data():
     conn = accounts_db.db_connection()
     cursor = conn.cursor()
     
-    query = "SELECT date, " + ", ".join(pretax_accounts) + " as pretax_data FROM entries"
+    query = "SELECT date, " + ", ".join(pretax_accounts) + " as pretax_data FROM PretaxEntries"
     print("query:", query)
     pretax_rows = []
     if pretax_accounts:
         pretax_rows = cursor.execute(query).fetchall()
     
-    query = "SELECT date, " + ", ".join(posttax_accounts) + " as posttax_data FROM entries"
+    query = "SELECT date, " + ", ".join(posttax_accounts) + " as posttax_data FROM PosttaxEntries"
     posttax_rows = []
     if posttax_accounts:
         posttax_rows = cursor.execute(query).fetchall()

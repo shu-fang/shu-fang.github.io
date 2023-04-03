@@ -49,8 +49,6 @@ class Database:
         else:
             balance = str(int(balance))
         return balance 
-    
-    
 
 class AccountsDatabase(Database):
     def __init__(self):
@@ -175,6 +173,6 @@ class PretaxEntriesTable(EntriesDatabase):
             "new_investment INTEGER NOT NULL DEFAULT 0"
         ])
 
-class PretaxEntriesTable(EntriesDatabase):
+class PosttaxEntriesTable(EntriesDatabase):
     def __init__(self):
         super().__init__("PosttaxEntries")
