@@ -170,7 +170,10 @@ class EntriesDatabase(Database):
     def wipe_table(self):
         self.delete_table()
         self.make_table()
-
+    
+    def get_table_name(self):
+        return self.name
+    
 class PretaxEntriesTable(EntriesDatabase):
     def __init__(self):
         super().__init__("PretaxEntries")

@@ -39,7 +39,13 @@ def input():
     # get all entries 
     conn = posttax_entries_table.db_connection()
     cursor = conn.cursor()
-    cursor.execute('SELECT * FROM PosttaxEntries')
+    cursor.execute(f'SELECT * FROM {posttax_entries_table.get_table_name()}')
+    posttax_entries = cursor.fetchall()
+    conn.close()
+
+    conn = pretax_entries_table.db_connection()
+    cursor = conn.cursor()
+    cursor.execute(f'SELECT * FROM {pretax_entries_table.get_table_name()}')
     posttax_entries = cursor.fetchall()
     conn.close()
 
@@ -47,7 +53,9 @@ def input():
                            current_date=datetime.today().strftime('%Y-%m-%d'), 
                            pretax_accounts=accounts_db.get_accounts("pre-tax"), 
                            posttax_accounts=accounts_db.get_accounts("post-tax"), 
-                           posttax_entries=posttax_entries, cursor=cursor)
+                           posttax_entries=posttax_entries,
+                           pretax_entries_table=pretax_entries_table,
+                           cursor=cursor)
 
 @app.route('/submit', methods=['POST'])
 def submit():

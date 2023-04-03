@@ -76,6 +76,24 @@
                 {% endfor %}
             </tbody>
         </table>
+        <table>
+            <thead>
+                <tr>
+                    {% for column in cursor.description %}
+                      <th>{{ column[0] }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in pretax_entries %}
+                <tr>
+                    {% for balance in entry %}
+                    <td> {{balance}} </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
         <script src="{{ url_for('static', filename='js/script.js') }}"></script>
     </body>
 </html>
