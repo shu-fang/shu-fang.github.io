@@ -4,6 +4,7 @@ body {
     text-align:center;
     color:rgb(48, 53, 48);
     font-size: 24px;
+    font-family:'Times New Roman';
 }
 a:visited { 
     text-decoration: none; 
@@ -66,4 +67,40 @@ button:hover {
 .other-pages li {
     font-size: 30px;
     margin-right: 10px;
+}
+
+.container {
+    position:relative;
+    left: 10px;
+    top: 30px;
+    width: 35%;
+    height: 30%;
+}
+
+.key-metrics {
+    border: 1px solid rgba(0, 0, 0, 0);
+    border-radius:25px;
+    padding: 10px;
+    margin-left:15px;
+    background-color: rgb(245, 234, 225);
+    text-align: left;
+}
+
+.account-container {
+    position:relative;
+    left: 10px;
+    top: 60px;
+    width: 35%;
+    height: 30%;
+}
+.account-balances {
+    border: 1px solid rgba(0, 0, 0, 0);
+    border-radius:25px;
+    padding: 10px;
+    background-color: rgb(225, 241, 245);
+    margin-left:15px;
+}
+
+h3, h4, th {
+    padding-left: 20px;
 }
