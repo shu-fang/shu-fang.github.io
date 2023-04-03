@@ -20,10 +20,20 @@
                 <tr>
                     <th>Pretax Accounts:</th>
                 </tr>
+                <tr>
+                    <td>Income</td>
+                    <td><input type="text" name="income" value="" id="income"></td>
+                </tr>
+                <tr>
+                    <td>New Investments</td>
+                    <td><input type="text" name="new_investments" value="" id="new_investments"></td>
+                </tr>
+
                 {% for account in pretax_accounts %}
                 <tr>
                     <td>{{ account[0] }}</td>
                     <td><input type="text" name="{{ account[0] }}" value="{{ account[3]|default('0') }}" id="{{ account[0] }}"></td>
+                    
                 </tr>
                 {% endfor %}
                 <tr>

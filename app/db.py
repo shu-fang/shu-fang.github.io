@@ -1,105 +1,166 @@
 import sqlite3
 from datetime import date 
 
-def make_accounts_table():
-    try:
-        conn = sqlite3.connect("database.sqlite")
-        cursor = conn.cursor()
-
-        sql_query = """CREATE TABLE IF NOT EXISTS accounts (
-            name text NOT NULL DEFAULT "unknown",
-            type text NOT NULL DEFAULT "unknown",
-            tax_status text NOT NULL DEFAULT "unknown",
-            balances text NOT NULL DEFAULT "0"
-        )"""
-
-        cursor.execute(sql_query)
-        conn.commit()
-        conn.close()
-    except sqlite3.Error as e:
-        print(f"Error creating accounts table: {e}")
-
-def make_entries_table():
-    try:
-        conn = sqlite3.connect("database.sqlite")
-        cursor = conn.cursor()
-
-        sql_query = """CREATE TABLE IF NOT EXISTS entries (
-            date DATE NOT NULL DEFAULT (DATE('now', 'localtime'))
-        )"""
-
-        cursor.execute(sql_query)
-        conn.commit()
-        conn.close()
-
-    except sqlite3.Error as e:
-        print(f"Error creating table: {e}")
-
-def delete_table(table):
-    conn = sqlite3.connect('database.sqlite')
-    cursor = conn.cursor()
-
-    # retrieve the current column names
-    cursor.execute("DROP TABLE IF EXISTS " + table)
-    conn.commit()
-    conn.close()
-
-def db_connection():
-    conn = None
-    try:
-        conn = sqlite3.connect('database.sqlite')
-    except sqlite3.error as e:
-        print(e)
-    return conn
-
-def format_balance(balance):
-    if not balance.isdigit():
-        balance = '0'
-    else:
-        balance = str(int(balance))
-    return balance 
-
-def add_entry(request):
-    conn = sqlite3.connect("database.sqlite")
+class Database:
+    def __init__(self, name):
+       self.name = name
+       return
     
-    cursor = conn.cursor()
-    accounts = {key: value for key, value in request.form.items() if key != 'entry_date'}
-    entry_date = request.form['entry_date']
+    def make_table(self, fields):
+        try:
+            conn = sqlite3.connect(self.name)
+            cursor = conn.cursor()
 
-    # Construct the SQL query to insert a new row into the 'entries' table
-    columns = [f"`{col}`" for col in accounts.keys()]
-    values = ', '.join(['?'] * len(accounts))
-    sql_query = f"INSERT INTO entries ({', '.join(columns)}, date) VALUES ({values}, ?)"
-    params = [format_balance(value) for value in accounts.values()] + [entry_date]
+            sql_query = f"""CREATE TABLE IF NOT EXISTS {self.name} (
+                {', '.join(fields)}
+            )"""
 
-    # Execute the SQL query and commit the changes to the database
-    cursor.execute(sql_query, params)
-    conn.commit()
-    conn.close()
-
-def update_account_balance(request):
-    # update accounts table
-    conn = db_connection()
-    cursor = conn.cursor()
-
-    add_entry(request)
-    # update account balance
-    latest_date = cursor.execute("SELECT MAX(date) FROM entries").fetchone()[0]
-    
-    entry_date = request.form['entry_date']
-    print("latest date:", latest_date, entry_date, latest_date <= entry_date)
-    if request.method == 'POST' and entry_date >= latest_date:
-        print("yes")
-        print("h1sdfgf:", request.form['entry_date'])
-        for account in request.form:
-            name = account
-            balance = format_balance(request.form[account])
-            
-            cursor.execute("UPDATE accounts SET balances=? WHERE name=?", (balance, name))
+            cursor.execute(sql_query)
             conn.commit()
+            conn.close()
 
-    cursor.execute("SELECT name, balances FROM accounts")
-    conn.close()
+        except sqlite3.Error as e:
+            print(f"Error creating {self.name} table: {e}")
 
-make_entries_table()
-make_accounts_table()
+    
+    def db_connection(self):
+        conn = None
+        try:
+            conn = sqlite3.connect('database.sqlite')
+        except sqlite3.error as e:
+            print(e)
+        return conn
+    
+    def delete_table(self):
+        conn = self.db_connection()
+        cursor = conn.cursor()
+
+        # retrieve the current column names
+        cursor.execute("DROP TABLE IF EXISTS " + self.name)
+        conn.commit()
+        conn.close()
+
+    def wipe_table(self):
+        return
+
+    def format_balance(self, balance):
+        if not balance.isdigit():
+            balance = '0'
+        else:
+            balance = str(int(balance))
+        return balance 
+    
+    
+
+class AccountsDatabase(Database):
+    def __init__(self):
+        name = "accounts"
+        super().__init__(name)
+        self.make_table()
+
+    def make_table(self):
+        return super().make_table([
+            "name text NOT NULL DEFAULT 'unknown'",
+            "type text NOT NULL DEFAULT 'unknown'",
+            "tax_status text NOT NULL DEFAULT 'unknown'",
+            "balances text NOT NULL DEFAULT '0'"
+        ])
+    
+    def add_account(self, request):
+        conn = self.db_connection()
+        cursor = conn.cursor()
+        new_name = request.form['accountName']
+        new_type = "placeholder"
+        new_tax_status = request.form['tax_status']
+        sql = """INSERT INTO accounts (name, type, tax_status)
+                    VALUES (?, ?, ?)"""
+        cursor = cursor.execute(sql, (new_name, new_type, new_tax_status))
+        conn.commit()
+        conn.close()
+
+        
+    def update_account_balance(self, request):
+        # update accounts table
+        conn = self.db_connection()
+        cursor = conn.cursor()
+
+        # update account balance
+        latest_date = cursor.execute("SELECT MAX(date) FROM entries").fetchone()[0]
+        
+        entry_date = request.form['entry_date']
+        print("latest date:", latest_date, entry_date, latest_date <= entry_date)
+        if request.method == 'POST' and entry_date >= latest_date:
+            for account in request.form:
+                name = account
+                balance = self.format_balance(request.form[account])
+                
+                cursor.execute("UPDATE accounts SET balances=? WHERE name=?", (balance, name))
+                conn.commit()
+
+        cursor.execute("SELECT name, balances FROM accounts")
+        conn.close()
+    
+    def get_latest_balances(self):
+        conn = self.db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT name, balances, tax_status FROM accounts")
+        
+        accounts_data = cursor.fetchall()
+        pretax_balance = sum([int(balance) for _, balance, tax_status in accounts_data if balance.isdigit() and tax_status == 'pre-tax'])
+        posttax_balance = sum([int(balance) for _, balance, tax_status in accounts_data if balance.isdigit() and tax_status == 'post-tax'])
+        return (pretax_balance, posttax_balance)
+    
+    def get_accounts(self, tax_status):
+        conn = self.db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT name FROM accounts WHERE tax_status = '" + tax_status + "'")
+        accounts = cursor.fetchall()
+        conn.close()
+        return accounts
+
+    def wipe_table(self):
+        self.delete_table()
+        self.make_table()
+
+class EntriesDatabase(Database):
+    def __init__(self):
+        name = "entries"
+        super().__init__(name)
+        self.make_table()
+
+    def make_table(self):
+        return super().make_table([
+            "date DATE NOT NULL DEFAULT (DATE('now', 'localtime'))"
+        ])
+    
+    def add_column(self, request):
+        conn = self.db_connection()
+        cursor = conn.cursor()
+        # Construct a new SQL query to add a new column to the 'entries' table
+        sql_query = f"ALTER TABLE entries ADD COLUMN '{request.form['accountName']}' TEXT DEFAULT '0'"
+        # Execute the SQL query and commit the changes to the database
+        cursor.execute(sql_query)
+        conn.commit()
+        conn.close()
+
+    def add_entry(self, request):
+        conn = sqlite3.connect("database.sqlite")
+        
+        cursor = conn.cursor()
+        accounts = {key: value for key, value in request.form.items() if key != 'entry_date'}
+        entry_date = request.form['entry_date']
+
+        # Construct the SQL query to insert a new row into the 'entries' table
+        columns = [f"`{col}`" for col in accounts.keys()]
+        values = ', '.join(['?'] * len(accounts))
+        sql_query = f"INSERT INTO entries ({', '.join(columns)}, date) VALUES ({values}, ?)"
+        params = [self.format_balance(value) for value in accounts.values()] + [entry_date]
+
+        # Execute the SQL query and commit the changes to the database
+        cursor.execute(sql_query, params)
+        conn.commit()
+        conn.close()
+
+    def wipe_table(self):
+        self.delete_table()
+        self.make_table()
