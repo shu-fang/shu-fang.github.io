@@ -12,18 +12,18 @@ def serve_css(path):
 
 @app.route('/')
 def index():
-    conn = db_connection('accounts')
+    conn = db_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT name, balances, tax_status FROM accounts")
+    
     accounts_data = cursor.fetchall()
-
     pretax_balance = sum([int(balance) for _, balance, tax_status in accounts_data if balance.isdigit() and tax_status == 'pre-tax'])
     posttax_balance = sum([int(balance) for _, balance, tax_status in accounts_data if balance.isdigit() and tax_status == 'post-tax'])
     return render_template('index.html', account_balances=accounts_data, pretax_balance=pretax_balance, posttax_balance=posttax_balance)
 
 @app.route('/get_pretax_accounts')
 def get_pretax_accounts(tax_status):
-    conn = db_connection('accounts')
+    conn = db_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT name FROM accounts WHERE tax_status = '" + tax_status + "'")
     accounts = cursor.fetchall()
@@ -42,7 +42,7 @@ def input():
         update_account_balance(request)
 
     # get all entries 
-    conn = sqlite3.connect('entries.sqlite')
+    conn = db_connection()
     cursor = conn.cursor()
     cursor.execute('SELECT * FROM entries')
     entries = cursor.fetchall()
@@ -50,15 +50,13 @@ def input():
 
     # get pretax accounts
     pretax_accounts = get_pretax_accounts("pre-tax")
-    print("pretax:", pretax_accounts)
-    print("enm:", entries)
     posttax_accounts = get_pretax_accounts("post-tax")
     return render_template('input.html', pretax_accounts=pretax_accounts, posttax_accounts=posttax_accounts, entries=entries, cursor=cursor)
 
 @app.route('/submit', methods=['POST'])
 def submit():
     # insert new account into accounts database
-    conn = db_connection('accounts')
+    conn = db_connection()
     cursor = conn.cursor()
     new_name = request.form['accountName']
     new_type = "placeholder"
@@ -70,7 +68,7 @@ def submit():
     conn.close()
 
     # insert new account as column into entries database
-    conn = sqlite3.connect('entries.sqlite')
+    conn = db_connection()
     cursor = conn.cursor()
     # Construct a new SQL query to add a new column to the 'entries' table
     sql_query = f"ALTER TABLE entries ADD COLUMN '{new_name}' TEXT DEFAULT '0'"
@@ -82,7 +80,7 @@ def submit():
 
 @app.route('/clear', methods=['POST'])
 def clear():
-    conn = db_connection('accounts')
+    conn = db_connection()
     cursor = conn.cursor()
     cursor.execute("DELETE FROM accounts")
     conn.commit()
@@ -99,16 +97,21 @@ def clear():
 
 @app.route('/data')
 def data():
-    conn = db_connection('entries')
+    pretax_accounts = [account[0] for account in get_pretax_accounts("pre-tax")]
+    
+    conn = db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM entries")
-    rows = cursor.fetchall()
+    query = "SELECT date, " + ", ".join(pretax_accounts) + " as pretax_data FROM entries"
+    rows = cursor.execute(query).fetchall()
     conn.close()
-
-    columns = [desc[0] for desc in cursor.description]
+    print("rows:", rows)
     data = []
     for row in rows:
-        data.append(dict(zip(columns, row)))
+        date = row[0]
+        balance = sum([int(x) for x in row[1:]])
+        data.append((date,balance))
+    conn.close()
+    print("Data:", data)
     return jsonify(data)
 
 if __name__ == '__main__':

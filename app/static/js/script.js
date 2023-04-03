@@ -47,27 +47,29 @@ function clearDatabase() {
     })
 }
 
-fetch('/data')
-  .then(response => response.json())
-  .then(data => {
-    // Extract the dates and balances from the data
-    const dates = data.map(entry => entry[2]);
-    const balances = data.map(entry => entry[3]);
-  
-    // Create a new Chart.js chart using the retrieved data
-    const ctx = document.getElementById('posttax-balance-chart').getContext('2d');
-    const chart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: balances,
-        datasets: [{
-          label: 'Posttax Account Balance',
-          data: dates,
-          yAxisID: 'y-axis-0',
-          fill: false,
-          borderColor: 'rgb(75, 192, 192)',
-          tension: 0.1
-        }]
-      }
+function createChart(){
+    fetch('/data')
+    .then(response => response.json())
+    .then(data => {
+        console.log(data)
+        // Extract the dates and balances from the data
+        const dates = data.map(entry => entry[0]);
+        const balances = data.map(entry => entry[1]);
+        // Create a new Chart.js chart using the retrieved data
+        const ctx = document.getElementById('pretax-balance-chart').getContext('2d');
+        const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: dates,
+            datasets: [{
+            label: 'Pretax Account Balance',
+            data: balances,
+            yAxisID: 'y-axis-0',
+            fill: false,
+            borderColor: 'rgb(75, 192, 192)',
+            tension: 0.1
+            }]
+        }
+        });
     });
-});
+}

@@ -3,7 +3,7 @@ from datetime import date
 
 def make_accounts_table():
     try:
-        conn = sqlite3.connect("accounts.sqlite")
+        conn = sqlite3.connect("database.sqlite")
         cursor = conn.cursor()
 
         sql_query = """CREATE TABLE IF NOT EXISTS accounts (
@@ -21,7 +21,7 @@ def make_accounts_table():
 
 def make_entries_table():
     try:
-        conn = sqlite3.connect("entries.sqlite")
+        conn = sqlite3.connect("database.sqlite")
         cursor = conn.cursor()
 
         sql_query = """CREATE TABLE IF NOT EXISTS entries (
@@ -35,8 +35,8 @@ def make_entries_table():
     except sqlite3.Error as e:
         print(f"Error creating table: {e}")
 
-def delete_table(table):
-    conn = sqlite3.connect(table + '.sqlite')
+def delete_table():
+    conn = sqlite3.connect('database.sqlite')
     cursor = conn.cursor()
 
     # retrieve the current column names
@@ -44,10 +44,10 @@ def delete_table(table):
     conn.commit()
     conn.close()
 
-def db_connection(table):
+def db_connection():
     conn = None
     try:
-        conn = sqlite3.connect(table + '.sqlite')
+        conn = sqlite3.connect('database.sqlite')
     except sqlite3.error as e:
         print(e)
     return conn
@@ -60,7 +60,7 @@ def format_balance(balance):
     return balance 
 
 def add_entry(request):
-    conn = sqlite3.connect("entries.sqlite")
+    conn = sqlite3.connect("database.sqlite")
     
     cursor = conn.cursor()
     accounts = request.form
@@ -77,7 +77,7 @@ def add_entry(request):
 
 def update_account_balance(request):
     # update accounts table
-    conn = db_connection('accounts')
+    conn = db_connection()
     cursor = conn.cursor()
 
     add_entry(request)
