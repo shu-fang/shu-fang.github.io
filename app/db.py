@@ -85,9 +85,10 @@ def update_account_balance(request):
     add_entry(request)
     # update account balance
     latest_date = cursor.execute("SELECT MAX(date) FROM entries").fetchone()[0]
-    print("latest date:", latest_date)
+    
     entry_date = request.form['entry_date']
-    if request.method == 'POST' and entry_date > latest_date:
+    print("latest date:", latest_date, entry_date, latest_date <= entry_date)
+    if request.method == 'POST' and entry_date >= latest_date:
         print("yes")
         print("h1sdfgf:", request.form['entry_date'])
         for account in request.form:
