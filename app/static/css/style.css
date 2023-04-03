@@ -1,10 +1,10 @@
 
 body {
-    background-color:rgb(217, 219, 217);
+    background-color:rgb(240, 240, 240);
     text-align:center;
     color:rgb(48, 53, 48);
     font-size: 24px;
-    font-family:'Times New Roman';
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 a:visited { 
     text-decoration: none; 
@@ -81,11 +81,12 @@ button:hover {
     border: 1px solid rgba(0, 0, 0, 0);
     border-radius:25px;
     padding: 10px;
-    margin-left:15px;
-    background-color: rgb(245, 234, 225);
+    background-color: rgb(252, 251, 249);
     text-align: left;
 }
-
+.key-metrics h5 {
+    margin-top: 30px;
+}
 .account-container {
     position:relative;
     left: 10px;
@@ -97,22 +98,28 @@ button:hover {
     border: 1px solid rgba(0, 0, 0, 0);
     border-radius:25px;
     padding: 10px;
-    background-color: rgb(225, 241, 245);
-    margin-left:15px;
+    background-color: rgb(252, 251, 249);
+    text-align: left;
 }
 
-h3, h4, th {
+h4, h5, th {
     padding-left: 20px;
 }
 
+td { 
+    font-weight: 600;
+    font-size:20px;
+    padding-left:20px;
+}
 .chart-container {
     position: absolute;
-    right: 10px;
-    top: 370px;
-    width: 50%;
+    right: 30px;
+    top: 105px;
+    width: 55%;
     height: 30%;
     border: 1px solid rgba(0, 0, 0, 0);
     border-radius:25px;
     padding: 10px;
-    background-color: rgb(225, 245, 231);
+    margin-left:35%;
+    background-color: rgb(252, 251, 249);
 }

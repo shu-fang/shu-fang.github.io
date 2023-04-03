@@ -19,9 +19,17 @@
     <body onload="createChart()">
         <div class="container">
             <div class="key-metrics">
-                <h3>Net Worth</h3>
-                <h4>Pre-tax NetWorth: {{ pretax_balance }}</h4>
-                <h4>Post-tax NetWorth: {{ posttax_balance }}</h4>
+                <table id="key-metrics-table"> 
+                    <thead>
+                        <tr>
+                            <th>Net Worth</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Pre-tax:</td><td>{{ pretax_balance }}</td></tr>
+                        <tr><td>Post-tax:</td><td>{{ posttax_balance }}</td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
         <div class="account-container">
@@ -35,7 +43,7 @@
                     <tbody>
                         {% for account, balances, _ in account_balances %}
                             <tr>
-                                <td>{{ account }}</td>
+                                <td>{{ account }}:</td>
                                 <td>{{ balances }}</td>
                             </tr>
                         {% endfor %}

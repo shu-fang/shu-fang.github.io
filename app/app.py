@@ -104,11 +104,13 @@ def data():
     
     conn = db_connection()
     cursor = conn.cursor()
+    
     query = "SELECT date, " + ", ".join(pretax_accounts) + " as pretax_data FROM entries"
     print("query:", query)
     pretax_rows = []
     if pretax_accounts:
         pretax_rows = cursor.execute(query).fetchall()
+    
     query = "SELECT date, " + ", ".join(posttax_accounts) + " as posttax_data FROM entries"
     posttax_rows = []
     if posttax_accounts:
@@ -116,12 +118,18 @@ def data():
     conn.close()
     print("rows:", posttax_rows)
     data = []
-    for i in range(len(pretax_rows)):
-        pretax_row = pretax_rows[i]
-        posttax_row = posttax_rows[i]
-        date = pretax_row[0]
-        pretaxBalance = sum([int(x) for x in pretax_row[1:]])
-        posttaxBalance = sum([int(x) for x in posttax_row[1:]])
+    for i in range(max(len(pretax_rows), len(posttax_rows))):
+        date = datetime.today()
+        pretaxBalance, posttaxBalance = 0, 0
+        if i < len(pretax_rows):
+            pretax_row = pretax_rows[i]
+            pretaxBalance = sum([int(x) for x in pretax_row[1:]])
+            date = pretax_row[0]
+        if i < len(posttax_rows):
+            posttax_row = posttax_rows[i]
+            posttaxBalance = sum([int(x) for x in posttax_row[1:]])
+            date = posttax_row[0]
+        
         data.append((date,pretaxBalance, posttaxBalance))
     conn.close()
     print("Data:", data)
