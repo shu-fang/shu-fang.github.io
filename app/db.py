@@ -158,10 +158,12 @@ class EntriesDatabase(Database):
         # Construct the SQL query to insert a new row into the 'entries' table
         columns = [f"`{col}`" for col in accounts.keys()]
         print("columns:", columns)
+        
         values = ', '.join(['?'] * len(accounts))
+        
         sql_query = f"INSERT INTO {self.name} ({', '.join(columns)}, date) VALUES ({values}, ?)"
         params = [self.format_balance(value) for value in accounts.values()] + [entry_date]
-
+        print("inserting values:", params)
         # Execute the SQL query and commit the changes to the database
         cursor.execute(sql_query, params)
         conn.commit()

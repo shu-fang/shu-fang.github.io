@@ -59,9 +59,12 @@
             </table>
         </form>
         <table>
+            <tr>
+                <th>PostTax Entry History:</th>
+            </tr>
             <thead>
                 <tr>
-                    {% for column in cursor.description %}
+                    {% for column in post_cursor.description %}
                       <th>{{ column[0] }}</th>
                     {% endfor %}
                 </tr>
@@ -77,9 +80,12 @@
             </tbody>
         </table>
         <table>
+            <tr>
+                <th>Pretax Entry History:</th>
+            </tr>
             <thead>
                 <tr>
-                    {% for column in cursor.description %}
+                    {% for column in pre_cursor.description %}
                       <th>{{ column[0] }}</th>
                     {% endfor %}
                 </tr>
