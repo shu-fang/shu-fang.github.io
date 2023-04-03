@@ -130,7 +130,9 @@ class EntriesDatabase(Database):
 
     def make_table(self):
         return super().make_table([
-            "date DATE NOT NULL DEFAULT (DATE('now', 'localtime'))"
+            "date DATE NOT NULL DEFAULT (DATE('now', 'localtime'))",
+            "income INTEGER NOT NULL DEFAULT 0",
+            "new_investment INTEGER NOT NULL DEFAULT 0"
         ])
     
     def add_column(self, request):
