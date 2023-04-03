@@ -22,7 +22,6 @@ class Database:
         except sqlite3.Error as e:
             print(f"Error creating {self.name} table: {e}")
 
-    
     def db_connection(self):
         conn = None
         try:
@@ -50,6 +49,9 @@ class Database:
             balance = str(int(balance))
         return balance 
 
+    def get_table_name(self):
+        return self.name
+    
 class AccountsDatabase(Database):
     def __init__(self):
         name = "accounts"
@@ -57,7 +59,7 @@ class AccountsDatabase(Database):
         self.make_table()
 
     def make_table(self):
-        return super().make_table([
+        super().make_table([
             "name text NOT NULL DEFAULT 'unknown'",
             "type text NOT NULL DEFAULT 'unknown'",
             "tax_status text NOT NULL DEFAULT 'unknown'",
@@ -134,7 +136,7 @@ class EntriesDatabase(Database):
         self.make_table()
 
     def make_table(self):
-        return super().make_table([
+        super().make_table([
             "date DATE NOT NULL DEFAULT (DATE('now', 'localtime'))",
             *self.columns
         ])
@@ -157,13 +159,11 @@ class EntriesDatabase(Database):
         entry_date = request.form['entry_date']
         # Construct the SQL query to insert a new row into the 'entries' table
         columns = [f"`{col}`" for col in accounts.keys()]
-        print("columns:", columns)
         
         values = ', '.join(['?'] * len(accounts))
         
         sql_query = f"INSERT INTO {self.name} ({', '.join(columns)}, date) VALUES ({values}, ?)"
         params = [self.format_balance(value) for value in accounts.values()] + [entry_date]
-        print("inserting values:", params)
         # Execute the SQL query and commit the changes to the database
         cursor.execute(sql_query, params)
         conn.commit()
@@ -173,8 +173,7 @@ class EntriesDatabase(Database):
         self.delete_table()
         self.make_table()
     
-    def get_table_name(self):
-        return self.name
+    
     
 class PretaxEntriesTable(EntriesDatabase):
     def __init__(self):
@@ -185,3 +184,25 @@ class PosttaxEntriesTable(EntriesDatabase):
         super().__init__("PosttaxEntries", 
                          ["income INTEGER NOT NULL DEFAULT 0",
                             "new_investment INTEGER NOT NULL DEFAULT 0"])
+
+class AnalysisTable(Database):
+    def __init__(self):
+        self.name = "AnalysisTable"
+        super().__init__(self.name)
+        self.make_table()
+
+    def make_table(self):
+        today = date.today().strftime('%Y-%m-%d')
+
+        super().make_table([
+            f"date DATE NOT NULL DEFAULT '{today}'",
+            "balance INTEGER NOT NULL DEFAULT 0",
+            "cashflow INTEGER NOT NULL DEFAULT 0",
+            "spending INTEGER NOT NULL DEFAULT 0",
+            "notes TEXT DEFAULT ''"
+        ])
+    
+    def wipe_table(self):
+        self.delete_table()
+        self.make_table()
+    
