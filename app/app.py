@@ -99,19 +99,26 @@ def clear():
 
 @app.route('/data')
 def data():
-    pretax_accounts = [account[0] for account in get_pretax_accounts("pre-tax")]
+    pretax_accounts = ["\"" + str(account[0]) + "\"" for account in get_pretax_accounts("pre-tax")]
+    posttax_accounts = ["\"" + str(account[0]) + "\"" for account in get_pretax_accounts("post-tax")]
     
     conn = db_connection()
     cursor = conn.cursor()
     query = "SELECT date, " + ", ".join(pretax_accounts) + " as pretax_data FROM entries"
-    rows = cursor.execute(query).fetchall()
+    print("query:", query)
+    pretax_rows = cursor.execute(query).fetchall()
+    query = "SELECT date, " + ", ".join(posttax_accounts) + " as posttax_data FROM entries"
+    posttax_rows = cursor.execute(query).fetchall()
     conn.close()
-    print("rows:", rows)
+    print("rows:", posttax_rows)
     data = []
-    for row in rows:
-        date = row[0]
-        balance = sum([int(x) for x in row[1:]])
-        data.append((date,balance))
+    for i in range(len(pretax_rows)):
+        pretax_row = pretax_rows[i]
+        posttax_row = posttax_rows[i]
+        date = pretax_row[0]
+        pretaxBalance = sum([int(x) for x in pretax_row[1:]])
+        posttaxBalance = sum([int(x) for x in posttax_row[1:]])
+        data.append((date,pretaxBalance, posttaxBalance))
     conn.close()
     print("Data:", data)
     return jsonify(data)

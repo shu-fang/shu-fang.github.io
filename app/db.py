@@ -35,7 +35,7 @@ def make_entries_table():
     except sqlite3.Error as e:
         print(f"Error creating table: {e}")
 
-def delete_table():
+def delete_table(table):
     conn = sqlite3.connect('database.sqlite')
     cursor = conn.cursor()
 
@@ -84,7 +84,12 @@ def update_account_balance(request):
 
     add_entry(request)
     # update account balance
-    if request.method == 'POST':
+    latest_date = cursor.execute("SELECT MAX(date) FROM entries").fetchone()[0]
+    print("latest date:", latest_date)
+    entry_date = request.form['entry_date']
+    if request.method == 'POST' and entry_date > latest_date:
+        print("yes")
+        print("h1sdfgf:", request.form['entry_date'])
         for account in request.form:
             name = account
             balance = format_balance(request.form[account])

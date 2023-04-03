@@ -55,21 +55,37 @@ function createChart(){
         console.log("sorted data:", data)
         // Extract the dates and balances from the data
         const dates = data.map(entry => entry[0]);
-        const balances = data.map(entry => entry[1]);
+        const pretaxBalances = data.map(entry => entry[1]);
+        const posttaxBalances = data.map(entry => entry[2])
         // Create a new Chart.js chart using the retrieved data
-        const ctx = document.getElementById('pretax-balance-chart').getContext('2d');
+        const ctx = document.getElementById('balance-chart').getContext('2d');
         const chart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: dates,
-            datasets: [{
-            label: 'Pretax Account Balance',
-            data: balances,
-            yAxisID: 'y-axis-0',
-            fill: false,
-            borderColor: 'rgb(75, 192, 192)',
-            tension: 0.1
-            }]
+            datasets: [
+                {
+                    label: 'Pretax Account Balance',
+                    data: pretaxBalances,
+                    fill: false,
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                },
+                {
+                    label: 'Aftertax Account Balance',
+                    data: posttaxBalances,
+                    fill: false,
+                    borderColor: 'rgb(192, 75, 192)',
+                    tension: 0.1
+                }
+            ]
+        }, options: {
+            scales: {
+                yAxes: [{
+                    type: 'linear',
+                    position: 'left'
+                }]
+            }
         }
         });
     });
