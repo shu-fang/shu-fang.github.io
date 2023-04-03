@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, send_from_directory
 import sqlite3
 from .db import db_connection, delete_table, make_entries_table, update_account_balance
-
+from datetime import datetime
 from flask import jsonify
 
 app = Flask(__name__)
@@ -51,7 +51,9 @@ def input():
     # get pretax accounts
     pretax_accounts = get_pretax_accounts("pre-tax")
     posttax_accounts = get_pretax_accounts("post-tax")
-    return render_template('input.html', pretax_accounts=pretax_accounts, posttax_accounts=posttax_accounts, entries=entries, cursor=cursor)
+
+    current_date = datetime.today().strftime('%Y-%m-%d')
+    return render_template('input.html', current_date=current_date, pretax_accounts=pretax_accounts, posttax_accounts=posttax_accounts, entries=entries, cursor=cursor)
 
 @app.route('/submit', methods=['POST'])
 def submit():

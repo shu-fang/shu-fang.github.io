@@ -63,13 +63,15 @@ def add_entry(request):
     conn = sqlite3.connect("database.sqlite")
     
     cursor = conn.cursor()
-    accounts = request.form
-    
+    accounts = {key: value for key, value in request.form.items() if key != 'entry_date'}
+    entry_date = request.form['entry_date']
+
     # Construct the SQL query to insert a new row into the 'entries' table
     columns = [f"`{col}`" for col in accounts.keys()]
     values = ', '.join(['?'] * len(accounts))
     sql_query = f"INSERT INTO entries ({', '.join(columns)}, date) VALUES ({values}, ?)"
-    params = [format_balance(value) for value in accounts.values()] + [date.today()]
+    params = [format_balance(value) for value in accounts.values()] + [entry_date]
+
     # Execute the SQL query and commit the changes to the database
     cursor.execute(sql_query, params)
     conn.commit()

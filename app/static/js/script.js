@@ -51,7 +51,8 @@ function createChart(){
     fetch('/data')
     .then(response => response.json())
     .then(data => {
-        console.log(data)
+        data.sort((a, b) => (a[0] > b[0]) ? 1 : -1);
+        console.log("sorted data:", data)
         // Extract the dates and balances from the data
         const dates = data.map(entry => entry[0]);
         const balances = data.map(entry => entry[1]);
