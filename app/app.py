@@ -106,9 +106,13 @@ def data():
     cursor = conn.cursor()
     query = "SELECT date, " + ", ".join(pretax_accounts) + " as pretax_data FROM entries"
     print("query:", query)
-    pretax_rows = cursor.execute(query).fetchall()
+    pretax_rows = []
+    if pretax_accounts:
+        pretax_rows = cursor.execute(query).fetchall()
     query = "SELECT date, " + ", ".join(posttax_accounts) + " as posttax_data FROM entries"
-    posttax_rows = cursor.execute(query).fetchall()
+    posttax_rows = []
+    if posttax_accounts:
+        posttax_rows = cursor.execute(query).fetchall()
     conn.close()
     print("rows:", posttax_rows)
     data = []

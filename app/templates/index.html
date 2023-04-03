@@ -17,25 +17,32 @@
         </div>
     </head>
     <body onload="createChart()">
-        <div class="key-metrics">
-            <h3>Pretax NetWorth: {{ pretax_balance }}</h3>
-            <h3>Posttax NetWorth: {{ posttax_balance }}</h3>
+        <div class="container">
+            <div class="key-metrics">
+                <h3>Net Worth</h3>
+                <h4>Pre-tax NetWorth: {{ pretax_balance }}</h4>
+                <h4>Post-tax NetWorth: {{ posttax_balance }}</h4>
+            </div>
         </div>
-        <table id="account-balances"> 
-            <thead>
-                <tr>
-                    <th>Latest Account Balances</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for account, balances, _ in account_balances %}
-                    <tr>
-                        <td>{{ account }}</td>
-                        <td>{{ balances }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="account-container">
+            <div class="account-balances">
+                <table id="account-balances-table"> 
+                    <thead>
+                        <tr>
+                            <th>Balances</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for account, balances, _ in account_balances %}
+                            <tr>
+                                <td>{{ account }}</td>
+                                <td>{{ balances }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
         <canvas id="balance-chart"></canvas>
         <script src="{{ url_for('static', filename='js/script.js') }}"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
