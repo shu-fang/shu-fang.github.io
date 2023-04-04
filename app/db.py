@@ -18,7 +18,6 @@ class Database:
                 id SERIAL PRIMARY KEY,
                 {', '.join(fields)}
             )"""
-            print("added fields:", fields)
             cursor.execute(sql_query)
             conn.commit()
             conn.close()
@@ -28,22 +27,15 @@ class Database:
 
     def db_connection(self):
         conn = None
-        DATABASE_URL = os.environ['DATABASE_URL']
+        # DATABASE_URL = os.environ['DATABASE_URL']
         try:
-            # conn = psycopg2.connect(
-            #     host="localhost",
-            #     database="mydb",
-            #     user="postgres",
-            #     password="1011"
-            # )
-            # conn = psycopg2.connect(
-            #     host="ec2-44-215-1-253.compute-1.amazonaws.com",
-            #     database="dbuo39q163deq1",
-            #     user="bqjbebgamhjjpl",
-            #     password="edebb599b515cf273e761778f491d2c6f57299715c8cd99f3b298e000991f94b"
-            # )
-            
-            conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+            conn = psycopg2.connect(
+                host="localhost",
+                database="mydb",
+                user="postgres",
+                password="1011"
+            )
+            # conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 
         except psycopg2.Error as e:
             print(e)
@@ -74,11 +66,8 @@ class Database:
     def get_column_names(self):
         conn = self.db_connection()
         cursor = conn.cursor()
-
-        # Execute a query to get the column names of the table
-        cursor.execute(f"SELECT column_name FROM information_schema.columns WHERE table_name='{self.name}'")
-        columns = [column[1] for column in cursor.fetchall()]
-
+        cursor.execute(f"SELECT * FROM {self.name} LIMIT 0")
+        columns = [column[0] for column in cursor.description if column[0] != 'id']        
         conn.close()
         return columns
     
@@ -86,7 +75,7 @@ class Database:
         conn = self.db_connection()
         cursor = conn.cursor()
         cursor.execute(f"SELECT * FROM {self.name}")
-        rows = cursor.fetchall()
+        rows = [row[1:] for row in cursor.fetchall()]
         conn.close()
         return rows
     
@@ -107,7 +96,6 @@ class AccountsDatabase(Database):
     def add_account(self, request):
         conn = self.db_connection()
         cursor = conn.cursor()
-        print("Request form:", request.form)
         new_name = request.form['accountName']
         new_type = "placeholder"
         new_tax_status = request.form['tax_status']
@@ -135,7 +123,6 @@ class AccountsDatabase(Database):
         latest_date = cursor.fetchone()[0]
         
         entry_date = datetime.strptime(request.form['entry_date'], '%Y-%m-%d').date()
-        print("entry date:", entry_date, "type:", type(entry_date))
         if request.method == 'POST' and (not latest_date or entry_date >= latest_date):
             for account in request.form:
                 name = account
@@ -184,7 +171,6 @@ class EntriesDatabase(Database):
     def add_column(self, request):
         conn = self.db_connection()
         cursor = conn.cursor()
-        print("adding", request.form['accountName'], " to  ", self.name)
         # Construct a new SQL query to add a new column to the 'entries' table
         sql_query = f'ALTER TABLE {self.name} ADD COLUMN "{request.form["accountName"]}" INTEGER DEFAULT 0'
         # Execute the SQL query and commit the changes to the database
@@ -206,11 +192,7 @@ class EntriesDatabase(Database):
         sql_query = f"INSERT INTO {self.name} ({', '.join(columns)}, date) VALUES ({values}, DATE %s)"
         params = [self.format_balance(value) for value in accounts.values()] + [entry_date]
         # Execute the SQL query and commit the changes to the database
-        print(sql_query, params)
         cursor.execute(sql_query, params)
-        # cursor.execute(f"INSERT INTO {self.name} (date, {', '.join(request.form)})"
-        #                 "VALUES (CURRENT_DATE, {', '.join(['%s']*len(request.form))})",
-        #                 list(request.form.values()))
         conn.commit()
         conn.close()
 
@@ -233,7 +215,6 @@ class AnalysisTable(Database):
         self.name = "AnalysisTable"
         super().__init__(self.name)
         self.make_table()
-        print("making analysis table")
 
     def make_table(self):
         today = date.today().strftime('%Y-%m-%d')
@@ -261,7 +242,6 @@ class AnalysisTable(Database):
         
         # Calculate the total balance and cash flow based on the entries
         last_balance = 0
-        print("there are ", len(entries), " entries")
         income = 0 # need to get income
         for entry in entries:
             entry_dict = dict(entry)
@@ -276,10 +256,10 @@ class AnalysisTable(Database):
         conn.commit()
         conn.close()
 
-    def get_all_entries(self):
-        conn = self.db_connection()
-        cursor = conn.cursor()
-        cursor.execute(f"SELECT * FROM AnalysisTable")
-        rows = cursor.fetchall()
-        conn.close()
-        return rows
+    # def get_all_entries(self):
+    #     conn = self.db_connection()
+    #     cursor = conn.cursor()
+    #     cursor.execute(f"SELECT * FROM AnalysisTable")
+    #     rows = cursor.fetchall()
+    #     conn.close()
+    #     return rows

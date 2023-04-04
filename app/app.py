@@ -20,14 +20,12 @@ def index():
     pretax_balance, posttax_balance = accounts_db.get_latest_balances()
     columns = analysis_table.get_column_names()
     rows = analysis_table.get_all_entries()
-    print("rows:", rows)
     return render_template('index.html', pretax_balance=pretax_balance,
                            posttax_balance=posttax_balance,
                            columns = columns, rows = rows)
 
 @app.route('/accounts')
 def accounts():
-    print("Accounts analysis:", analysis_table.get_all_entries())
     return render_template('accounts.html', 
                            pretax_accounts=accounts_db.get_accounts('pre-tax'), 
                            posttax_accounts = accounts_db.get_accounts('post-tax'))
@@ -72,12 +70,9 @@ def submit():
     # insert new account into accounts database
     accounts_db.add_account(request)
     tax_status = request.form['tax_status']
-    print("sta:", tax_status)
     if tax_status == 'pre-tax':
-        print("column added to pretax")
         pretax_entries_table.add_column(request)
     else:
-        print("column added to posttax")
         posttax_entries_table.add_column(request)
         analysis_table.recalculate(posttax_entries_table)
     new_type = "placeholder"
