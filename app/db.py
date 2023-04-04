@@ -2,6 +2,9 @@ import sqlite3
 import psycopg2
 from psycopg2 import extras
 from datetime import date, datetime
+import os
+import dj_database_url
+
 
 class Database:
     def __init__(self, name): 
@@ -34,12 +37,15 @@ class Database:
             #     user="postgres",
             #     password="1011"
             # )
-            conn = psycopg2.connect(
-                host="ec2-44-215-1-253.compute-1.amazonaws.com",
-                database="dbuo39q163deq1",
-                user="bqjbebgamhjjpl",
-                password="edebb599b515cf273e761778f491d2c6f57299715c8cd99f3b298e000991f94b"
-            )
+            # conn = psycopg2.connect(
+            #     host="ec2-44-215-1-253.compute-1.amazonaws.com",
+            #     database="dbuo39q163deq1",
+            #     user="bqjbebgamhjjpl",
+            #     password="edebb599b515cf273e761778f491d2c6f57299715c8cd99f3b298e000991f94b"
+            # )
+            DATABASE_URL = os.environ['DATABASE_URL']
+            conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+
         except psycopg2.Error as e:
             print(e)
         return conn
