@@ -62,13 +62,11 @@
             <tr>
                 <th>PostTax Entry History:</th>
             </tr>
-            <thead>
-                <tr>
-                    {% for column in post_cursor.description %}
-                      <th>{{ column[0] }}</th>
-                    {% endfor %}
-                </tr>
-            </thead>
+            <tr>
+                {% for column in post_cursor.description %}
+                    <th>{{ column[0] }}</th>
+                {% endfor %}
+            </tr>
             <tbody>
                 {% for entry in posttax_entries %}
                 <tr>
@@ -83,13 +81,11 @@
             <tr>
                 <th>Pretax Entry History:</th>
             </tr>
-            <thead>
-                <tr>
-                    {% for column in pre_cursor.description %}
-                      <th>{{ column[0] }}</th>
-                    {% endfor %}
-                </tr>
-            </thead>
+            <tr>
+                {% for column in pre_cursor.description %}
+                    <th>{{ column[0] }}</th>
+                {% endfor %}
+            </tr>
             <tbody>
                 {% for entry in pretax_entries %}
                 <tr>

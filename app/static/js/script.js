@@ -16,8 +16,8 @@ function displayAccount(event, tableid) {
         return response.json();
     })
     .then(data => {
-        var posttaxRadio = document.querySelector('input[name="tax_status"][value="posttax"]');
-        var pretaxRadio = document.querySelector('input[name="tax_status"][value="pretax"]');
+        var posttaxRadio = document.querySelector('input[name="tax_status"][value="post-tax"]');
+        var pretaxRadio = document.querySelector('input[name="tax_status"][value="pre-tax"]');
         if (posttaxRadio && posttaxRadio.checked) {
             tableid = "posttax-accounts"
             console.log("POSTTAX")

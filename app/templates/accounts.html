@@ -26,14 +26,7 @@
                         </td>
                     </tr>
                 </table>
-                <div class="userInput"> 
-                    <form method="POST" action="{{ url_for('submit')}}" id="accountForm" onsubmit="return displayAccount(event, 'pretax-accounts')">
-                        <label for="accountName">Add new account:</label>
-                        <input type="text" id="accountName" name="accountName">
-                        <input type="hidden" name="tax_status" value="pre-tax">
-                        <button id="addPretax"> Submit </button>
-                    </form>
-                </div>
+
             </div>
             <div class="posttax-element">
                 <table id="posttax-accounts"> 
@@ -54,9 +47,9 @@
                     
                     <div class="tax-selection", id="tax_status">
                         <label for="pretax-radio">Pre-tax</label>
-                            <input type="radio" name="tax_status" id="pretax-radio" value="pretax">
+                            <input type="radio" name="tax_status" id="pretax-radio" value="pre-tax">
                         <label for="posttax-radio">Post-tax</label>
-                            <input type="radio" name="tax_status" id="posttax-radio" value="posttax">
+                            <input type="radio" name="tax_status" id="posttax-radio" value="post-tax">
                     </div>
                     <button id="addPostTax"> Submit </button>
                 </form>

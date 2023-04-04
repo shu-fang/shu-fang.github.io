@@ -70,11 +70,15 @@ def input():
 @app.route('/submit', methods=['POST'])
 def submit():
     # insert new account into accounts database
+    print("called")
     accounts_db.add_account(request)
     tax_status = request.form['tax_status']
-    if tax_status == 'pre-tax':
+    print("sta:", tax_status)
+    if tax_status == 'pretax':
+        print("column added to pretax")
         pretax_entries_table.add_column(request)
     else:
+        print("column added to posttax")
         posttax_entries_table.add_column(request)
         analysis_table.recalculate(posttax_entries_table)
     new_type = "placeholder"

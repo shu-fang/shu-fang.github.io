@@ -66,6 +66,9 @@ button:hover {
 .add-account-container {
     width: 30%;
     float:right;
+    bottom:10%;
+    right:10%;
+    position: absolute;
 }
 #pretax-accounts td,
 #posttax-accounts td {
