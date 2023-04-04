@@ -90,8 +90,8 @@ button:hover {
 .account-container {
     position:relative;
     left: 10px;
-    top: 60px;
-    width: 35%;
+    top: 300px;
+    width: 50%;
     height: 30%;
 }
 .account-balances {
