@@ -17,50 +17,52 @@
         </div>
     </head>
     <body onload="createChart()">
-        <div class="container">
-            <div class="key-metrics">
-                <table id="key-metrics-table"> 
-                    <thead>
-                        <tr>
-                            <th>Net Worth</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>Pre-tax:</td><td>{{ pretax_balance }}</td></tr>
-                        <tr><td>Post-tax:</td><td>{{ posttax_balance }}</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        <div class="account-container">
-            <div class="account-balances">
-                <table id="account-balances-table">
-                    <thead>
-                        <tr>
-                            <th>PostTax Balances</th>
-                        </tr>
-                    </thead>
-                    <thead>
-                        <tr>
-                            {% for column in columns %}
-                                <th>{{ column |title}}</th>
-                            {% endfor %}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for row in rows %}
+        <div class="wrapper">
+            <div class="container">
+                <div class="key-metrics">
+                    <table id="key-metrics-table"> 
+                        <thead>
                             <tr>
-                                {% for value in row %}
-                                    <td>{{ value }}</td>
+                                <th>Net Worth</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Pre-tax:</td><td>{{ pretax_balance }}</td></tr>
+                            <tr><td>Post-tax:</td><td>{{ posttax_balance }}</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="account-container">
+                <div class="account-balances">
+                    <table id="account-balances-table">
+                        <thead>
+                            <tr>
+                                <th>PostTax Balances</th>
+                            </tr>
+                        </thead>
+                        <thead>
+                            <tr>
+                                {% for column in columns %}
+                                    <th>{{ column |title}}</th>
                                 {% endfor %}
                             </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {% for row in rows %}
+                                <tr>
+                                    {% for value in row %}
+                                        <td>{{ value }}</td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
-        <div class="chart-container">
-            <canvas id="balance-chart"></canvas>
+            <div class="chart-container">
+                <canvas id="balance-chart"></canvas>
+            </div>
         </div>
         <script src="{{ url_for('static', filename='js/script.js') }}"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

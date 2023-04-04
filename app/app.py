@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, send_from_directory
-import sqlite3
+import psycopg2
 from .db import PretaxEntriesTable, PosttaxEntriesTable, AccountsDatabase, AnalysisTable
 from datetime import datetime
 from flask import jsonify
@@ -99,15 +99,17 @@ def data():
     conn = accounts_db.db_connection()
     cursor = conn.cursor()
     
-    query = "SELECT date, " + ", ".join(pretax_accounts) + " as pretax_data FROM PretaxEntries"
+    query = "SELECT date, " + ", ".join(pretax_accounts) + " as pretax_data FROM " + pretax_entries_table.get_table_name()
     pretax_rows = []
     if pretax_accounts:
-        pretax_rows = cursor.execute(query).fetchall()
+        cursor.execute(query)
+        pretax_rows = cursor.fetchall()
     
-    query = "SELECT date, " + ", ".join(posttax_accounts) + " as posttax_data FROM PosttaxEntries"
+    query = "SELECT date, " + ", ".join(posttax_accounts) + " as posttax_data FROM " + posttax_entries_table.get_table_name()
     posttax_rows = []
     if posttax_accounts:
-        posttax_rows = cursor.execute(query).fetchall()
+        cursor.execute(query)
+        posttax_rows = cursor.fetchall()
     conn.close()
 
     # TODO: pass date, pretax balance, posttax balance to chart --> need to change to separate date values 

@@ -1,5 +1,7 @@
 import sqlite3
-from datetime import date 
+import psycopg2
+from psycopg2 import extras
+from datetime import date, datetime
 
 class Database:
     def __init__(self, name):
@@ -12,6 +14,7 @@ class Database:
             cursor = conn.cursor()
 
             sql_query = f"""CREATE TABLE IF NOT EXISTS {self.name} (
+                id SERIAL PRIMARY KEY,
                 {', '.join(fields)}
             )"""
             print("added fields:", fields)
@@ -25,8 +28,13 @@ class Database:
     def db_connection(self):
         conn = None
         try:
-            conn = sqlite3.connect('database.sqlite')
-        except sqlite3.error as e:
+            conn = psycopg2.connect(
+                host="localhost",
+                database="mydb",
+                user="postgres",
+                password="1011"
+            )
+        except psycopg2.Error as e:
             print(e)
         return conn
     
@@ -57,7 +65,7 @@ class Database:
         cursor = conn.cursor()
 
         # Execute a query to get the column names of the table
-        cursor.execute(f"PRAGMA table_info({self.name})")
+        cursor.execute(f"SELECT column_name FROM information_schema.columns WHERE table_name='{self.name}'")
         columns = [column[1] for column in cursor.fetchall()]
 
         conn.close()
@@ -93,7 +101,7 @@ class AccountsDatabase(Database):
         new_type = "placeholder"
         new_tax_status = request.form['tax_status']
         sql = """INSERT INTO accounts (name, type, tax_status)
-                    VALUES (?, ?, ?)"""
+                    VALUES (%s, %s, %s)"""
         cursor = cursor.execute(sql, (new_name, new_type, new_tax_status))
         conn.commit()
         conn.close()
@@ -112,15 +120,17 @@ class AccountsDatabase(Database):
             table = "PosttaxEntries"
         else:
             print("WARNING: request form not recognized")
-        latest_date = cursor.execute(f"SELECT MAX(date) FROM {table}").fetchone()[0]
+        cursor.execute(f"SELECT MAX(date) FROM {table}")
+        latest_date = cursor.fetchone()[0]
         
-        entry_date = request.form['entry_date']
+        entry_date = datetime.strptime(request.form['entry_date'], '%Y-%m-%d').date()
+        print("entry date:", entry_date, "type:", type(entry_date))
         if request.method == 'POST' and (not latest_date or entry_date >= latest_date):
             for account in request.form:
                 name = account
                 balance = self.format_balance(request.form[account])
                 
-                cursor.execute("UPDATE accounts SET balances=? WHERE name=?", (balance, name))
+                cursor.execute("UPDATE accounts SET balances=%s WHERE name=%s", (balance, name))
                 conn.commit()
 
         cursor.execute("SELECT name, balances FROM accounts")
@@ -156,7 +166,7 @@ class EntriesDatabase(Database):
 
     def make_table(self):
         super().make_table([
-            "date DATE NOT NULL DEFAULT (DATE('now', 'localtime'))",
+            "date DATE NOT NULL DEFAULT CURRENT_DATE",
             *self.columns
         ])
     
@@ -165,7 +175,7 @@ class EntriesDatabase(Database):
         cursor = conn.cursor()
         print("adding", request.form['accountName'], " to  ", self.name)
         # Construct a new SQL query to add a new column to the 'entries' table
-        sql_query = f"ALTER TABLE {self.name} ADD COLUMN '{request.form['accountName']}' INTEGER DEFAULT 0"
+        sql_query = f'ALTER TABLE {self.name} ADD COLUMN "{request.form["accountName"]}" INTEGER DEFAULT 0'
         # Execute the SQL query and commit the changes to the database
         cursor.execute(sql_query)
         conn.commit()
@@ -178,14 +188,18 @@ class EntriesDatabase(Database):
                                                                                      'pretax_submit']}
         entry_date = request.form['entry_date']
         # Construct the SQL query to insert a new row into the 'entries' table
-        columns = [f"`{col}`" for col in accounts.keys()]
+        columns = [f'"{col}"' for col in accounts.keys()]
         
-        values = ', '.join(['?'] * len(accounts))
+        values = ', '.join(['%s'] * len(accounts))
         
-        sql_query = f"INSERT INTO {self.name} ({', '.join(columns)}, date) VALUES ({values}, ?)"
+        sql_query = f"INSERT INTO {self.name} ({', '.join(columns)}, date) VALUES ({values}, DATE %s)"
         params = [self.format_balance(value) for value in accounts.values()] + [entry_date]
         # Execute the SQL query and commit the changes to the database
+        print(sql_query, params)
         cursor.execute(sql_query, params)
+        # cursor.execute(f"INSERT INTO {self.name} (date, {', '.join(request.form)})"
+        #                 "VALUES (CURRENT_DATE, {', '.join(['%s']*len(request.form))})",
+        #                 list(request.form.values()))
         conn.commit()
         conn.close()
 
@@ -228,8 +242,7 @@ class AnalysisTable(Database):
     def recalculate(self, posttax_table):
         self.wipe_table()
         conn = self.db_connection()
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
+        cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
         # Get all the entries
         cursor.execute(f"SELECT * FROM {posttax_table.get_table_name()} ORDER BY date")
@@ -246,7 +259,7 @@ class AnalysisTable(Database):
             balance = sum(value for key, value in entry_dict.items() if key not in ['date', 'income'])
             cashflow = balance - last_balance 
             spending = income - cashflow
-            cursor.execute(f"INSERT INTO {self.name} (date, balance, cashflow, spending, notes) VALUES (?, ?, ?, ?, ?)",
+            cursor.execute(f"INSERT INTO {self.name} (date, balance, cashflow, spending, notes) VALUES (DATE %s, %s,%s, %s, %s)",
                        (date, balance, cashflow, spending, ""))
             last_balance = balance
         conn.commit()
@@ -255,7 +268,7 @@ class AnalysisTable(Database):
     def get_all_entries(self):
         conn = self.db_connection()
         cursor = conn.cursor()
-        res = cursor.execute(f"SELECT * FROM AnalysisTable")
-        rows = res.fetchall()
+        cursor.execute(f"SELECT * FROM AnalysisTable")
+        rows = cursor.fetchall()
         conn.close()
         return rows

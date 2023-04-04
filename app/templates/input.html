@@ -15,87 +15,89 @@
         </div>
     </head>
     <body>
-        <form method="POST">
-            <table id="posttax_balance_input_table"> 
+        <div class="wrapper">
+            <form method="POST">
+                <table id="posttax_balance_input_table"> 
+                    <tr>
+                        <th>Posttax Accounts:</th>
+                    </tr>
+                    <tr>
+                        <td>Income</td>
+                        <td><input type="number" name="income" value=0 id="income"></td>
+                    </tr>
+                    <tr>
+                        <td>New Investments</td>
+                        <td><input type="number" name="new_investment" value=0 id="new_investment"></td>
+                    </tr>
+                    {% for account in posttax_accounts %}
+                    <tr>
+                        <td>{{ account[0] }}</td>
+                        <td><input type="text" name="{{ account[0] }}" value="{{ account[3]|default('0') }}" id="{{ account[0] }}"></td>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <td><input type="date" name="entry_date" value="{{ current_date }}"></td>
+                        <td><button type="submit" name="posttax_submit">Submit</button></td>
+                    </tr>
+                </table>
+            </form>
+            <form method="POST">
+                <table id="pretax_balance_input_table">
+                    <tr>
+                        <th>Pretax Accounts:</th>
+                    </tr>
+                    {% for account in pretax_accounts %}
+                    <tr>
+                        <td>{{ account[0] }}</td>
+                        <td><input type="text" name="{{ account[0] }}" value="{{ account[3]|default('0') }}" id="{{ account[0] }}"></td>
+                        
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <td><input type="date" name="entry_date" value="{{ current_date }}"></td>
+                        <td><button type="submit" name="pretax_submit">Submit</button></td>
+                    </tr>
+                </table>
+            </form>
+            <table>
                 <tr>
-                    <th>Posttax Accounts:</th>
+                    <th>PostTax Entry History:</th>
                 </tr>
                 <tr>
-                    <td>Income</td>
-                    <td><input type="number" name="income" value=0 id="income"></td>
-                </tr>
-                <tr>
-                    <td>New Investments</td>
-                    <td><input type="number" name="new_investment" value=0 id="new_investment"></td>
-                </tr>
-                {% for account in posttax_accounts %}
-                <tr>
-                    <td>{{ account[0] }}</td>
-                    <td><input type="text" name="{{ account[0] }}" value="{{ account[3]|default('0') }}" id="{{ account[0] }}"></td>
-                </tr>
-                {% endfor %}
-                <tr>
-                    <td><input type="date" name="entry_date" value="{{ current_date }}"></td>
-                    <td><button type="submit" name="posttax_submit">Submit</button></td>
-                </tr>
-            </table>
-        </form>
-        <form method="POST">
-            <table id="pretax_balance_input_table">
-                <tr>
-                    <th>Pretax Accounts:</th>
-                </tr>
-                {% for account in pretax_accounts %}
-                <tr>
-                    <td>{{ account[0] }}</td>
-                    <td><input type="text" name="{{ account[0] }}" value="{{ account[3]|default('0') }}" id="{{ account[0] }}"></td>
-                    
-                </tr>
-                {% endfor %}
-                <tr>
-                    <td><input type="date" name="entry_date" value="{{ current_date }}"></td>
-                    <td><button type="submit" name="pretax_submit">Submit</button></td>
-                </tr>
-            </table>
-        </form>
-        <table>
-            <tr>
-                <th>PostTax Entry History:</th>
-            </tr>
-            <tr>
-                {% for column in post_cursor.description %}
-                    <th>{{ column[0] }}</th>
-                {% endfor %}
-            </tr>
-            <tbody>
-                {% for entry in posttax_entries %}
-                <tr>
-                    {% for balance in entry %}
-                    <td> {{balance}} </td>
+                    {% for column in post_cursor.description %}
+                        <th>{{ column[0] }}</th>
                     {% endfor %}
                 </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <table>
-            <tr>
-                <th>Pretax Entry History:</th>
-            </tr>
-            <tr>
-                {% for column in pre_cursor.description %}
-                    <th>{{ column[0] }}</th>
-                {% endfor %}
-            </tr>
-            <tbody>
-                {% for entry in pretax_entries %}
+                <tbody>
+                    {% for entry in posttax_entries %}
+                    <tr>
+                        {% for balance in entry %}
+                        <td> {{balance}} </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <table>
                 <tr>
-                    {% for balance in entry %}
-                    <td> {{balance}} </td>
+                    <th>Pretax Entry History:</th>
+                </tr>
+                <tr>
+                    {% for column in pre_cursor.description %}
+                        <th>{{ column[0] }}</th>
                     {% endfor %}
                 </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                <tbody>
+                    {% for entry in pretax_entries %}
+                    <tr>
+                        {% for balance in entry %}
+                        <td> {{balance}} </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
         <script src="{{ url_for('static', filename='js/script.js') }}"></script>
     </body>
 </html>
