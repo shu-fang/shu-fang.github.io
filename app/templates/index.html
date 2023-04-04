@@ -7,16 +7,17 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" type="text/css" href="{{ url_for('serve_css', path='style.css') }}">
         <title>Wen's Budgeting Tool</title>
-        
-        <div class="other-pages">
-            <ul>
-                <li><a href="{{ url_for('index') }}">Overview</a></li>
-                <li><a href="{{ url_for('input') }}">Input</a></li>
-                <li><a href="{{ url_for('accounts') }}">Accounts</a></li>
-            </ul>
-        </div>
     </head>
     <body onload="createChart()">
+        <div class="sidebar-container">
+            <div class="sidebar">
+                <ul>
+                    <li class="current-page"><a href="{{ url_for('index') }}">Overview</a></li>
+                    <li><a href="{{ url_for('input') }}">Input</a></li>
+                    <li><a href="{{ url_for('accounts') }}">Accounts</a></li>
+                </ul>
+            </div>
+        </div>
         <div class="wrapper">
             <div class="container">
                 <div class="key-metrics">
