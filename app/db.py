@@ -4,7 +4,7 @@ from psycopg2 import extras
 from datetime import date, datetime
 
 class Database:
-    def __init__(self, name):
+    def __init__(self, name): 
        self.name = name
        return
     
