@@ -206,6 +206,7 @@ class AnalysisTable(Database):
         self.name = "AnalysisTable"
         super().__init__(self.name)
         self.make_table()
+        print("making analysis table")
 
     def make_table(self):
         today = date.today().strftime('%Y-%m-%d')
@@ -219,12 +220,10 @@ class AnalysisTable(Database):
         ])
     
     def wipe_table(self):
-        print("wipded")
         self.delete_table()
         self.make_table()
     
     def recalculate(self, posttax_table):
-        print("RECALCULATING...")
         # self.wipe_table()
         conn = self.db_connection()
         conn.row_factory = sqlite3.Row
@@ -234,21 +233,29 @@ class AnalysisTable(Database):
         cursor.execute(f"SELECT * FROM {posttax_table.get_table_name()} ORDER BY date")
         entries = cursor.fetchall()
         
-        print("posttax entries3:", entries)
         # Calculate the total balance and cash flow based on the entries
         last_balance = 0
         income = 0 # need to get income
         for entry in entries:
             entry_dict = dict(entry)
-            print(entry_dict)
             date = entry['date']
             income = entry['income']
             balance = sum(value for key, value in entry_dict.items() if key not in ['date', 'income'])
             cashflow = balance - last_balance 
             spending = income - cashflow
-            print("inserting to:", self.name, date, balance, cashflow, spending, "")
             cursor.execute(f"INSERT INTO {self.name} (date, balance, cashflow, spending, notes) VALUES (?, ?, ?, ?, ?)",
                        (date, balance, cashflow, spending, ""))
             last_balance = balance
+        res = cursor.execute(f"SELECT * FROM AnalysisTable")
+        rows = res.fetchall()
+        print("rowsX:", [dict(x) for x in rows])
+        conn.commit()
         conn.close()
-    
+
+    def get_all_entries(self):
+        conn = self.db_connection()
+        cursor = conn.cursor()
+        res = cursor.execute(f"SELECT * FROM AnalysisTable")
+        rows = res.fetchall()
+        conn.close()
+        return rows

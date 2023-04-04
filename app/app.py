@@ -20,16 +20,14 @@ def index():
     pretax_balance, posttax_balance = accounts_db.get_latest_balances()
     columns = analysis_table.get_column_names()
     rows = analysis_table.get_all_entries()
-    conn = analysis_table.db_connection()
-    cursor = conn.cursor()
-    res = cursor.execute(f"SELECT * FROM {analysis_table.get_table_name()}")
-    print("analysis rows2:", analysis_table.get_table_name(), rows, res.fetchall())
+    print("rows:", rows)
     return render_template('index.html', pretax_balance=pretax_balance,
                            posttax_balance=posttax_balance,
                            columns = columns, rows = rows)
 
 @app.route('/accounts')
 def accounts():
+    print("Accounts analysis:", analysis_table.get_all_entries())
     return render_template('accounts.html', 
                            pretax_accounts=accounts_db.get_accounts('pre-tax'), 
                            posttax_accounts = accounts_db.get_accounts('post-tax'))
@@ -41,11 +39,12 @@ def input():
         if 'posttax_submit' in request.form:
             posttax_entries_table.add_entry(request)
             analysis_table.recalculate(posttax_entries_table)
+            conn = analysis_table.db_connection()
+            conn.close()
         elif 'pretax_submit' in request.form:
             pretax_entries_table.add_entry(request)
         else:
             print("WARNING: request from input page not recognized")
-
     # get all entries 
     conn = posttax_entries_table.db_connection()
     post_cursor = conn.cursor()
@@ -98,7 +97,6 @@ def data():
     cursor = conn.cursor()
     
     query = "SELECT date, " + ", ".join(pretax_accounts) + " as pretax_data FROM PretaxEntries"
-    print("query:", query)
     pretax_rows = []
     if pretax_accounts:
         pretax_rows = cursor.execute(query).fetchall()
@@ -110,7 +108,6 @@ def data():
     conn.close()
 
     # TODO: pass date, pretax balance, posttax balance to chart --> need to change to separate date values 
-    print("rows:", posttax_rows)
     data = []
     for i in range(max(len(pretax_rows), len(posttax_rows))):
         date = datetime.today()
@@ -126,7 +123,6 @@ def data():
         
         data.append((date,pretaxBalance, posttaxBalance))
     conn.close()
-    print("Data:", data)
     return jsonify(data)
 
 if __name__ == '__main__':
