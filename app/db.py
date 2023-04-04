@@ -88,6 +88,7 @@ class AccountsDatabase(Database):
     def add_account(self, request):
         conn = self.db_connection()
         cursor = conn.cursor()
+        print("Request form:", request.form)
         new_name = request.form['accountName']
         new_type = "placeholder"
         new_tax_status = request.form['tax_status']

@@ -15,18 +15,16 @@
         </div>
     </head>
     <body>
-        <div class="wrapper">
+        <div class="accounts-wrapper">
             <div class="pretax-element">
-                <h2 id="pretax">Pre-tax Accounts</h2>
                 <table id="pretax-accounts"> 
                     <tr>
-                        <th>Accounts:</th>
+                        <td>
+                            {% for account in pretax_accounts %}
+                                {{ account[0] }}{% if not loop.last %}  {% endif %}
+                            {% endfor %}
+                        </td>
                     </tr>
-                    {% for account in pretax_accounts %}
-                    <tr>
-                        <td>{{ account[0] }}</td>
-                    </tr>
-                    {% endfor %}
                 </table>
                 <div class="userInput"> 
                     <form method="POST" action="{{ url_for('submit')}}" id="accountForm" onsubmit="return displayAccount(event, 'pretax-accounts')">
@@ -38,26 +36,41 @@
                 </div>
             </div>
             <div class="posttax-element">
-                <h2 id="posttax">Post-tax Accounts</h2>
                 <table id="posttax-accounts"> 
                     <tr>
-                        <th>Accounts:</th>
+                        <td>
+                            {% for account in posttax_accounts %}
+                                {{ account[0] }}{% if not loop.last %}  {% endif %}
+                            {% endfor %}
+                        </td>
                     </tr>
-                    {% for account in posttax_accounts %}
-                    <tr>
-                        <td>{{ account[0] }}</td>
-                    </tr>
-                    {% endfor %}
                 </table>
-                <div class="userInput"> 
-                    <form method="POST" action="{{ url_for('submit')}}" id="accountForm" onsubmit="return displayAccount(event, 'posttax-accounts')">
-                        <label for="accountName">Add new account:</label>
-                        <input type="text" id="accountName" name="accountName">
-                        <input type="hidden" name="tax_status" value="post-tax">
-                        <button id="addPostTax"> Submit </button>
-                    </form>
-                </div>
+                
             </div>
+            <div class="add-account-container"> 
+                <form method="POST" action="{{ url_for('submit')}}" id="accountForm" onsubmit="return displayAccount(event, 'pretax-accounts')">
+                    <label for="accountName">Add new account:</label>
+                    <input type="text" id="accountName" name="accountName">
+                    
+                    <div class="tax-selection", id="tax_status">
+                        <label for="pretax-radio">Pre-tax</label>
+                            <input type="radio" name="tax_status" id="pretax-radio" value="pretax">
+                        <label for="posttax-radio">Post-tax</label>
+                            <input type="radio" name="tax_status" id="posttax-radio" value="posttax">
+                    </div>
+                    <button id="addPostTax"> Submit </button>
+                </form>
+                
+                <!-- <div class="type-selection">
+                    <label for="debit-radio">Debit</label>
+                    <input type="radio" name="type" id="debit-radio" value="debit">
+                    <label for="credit-radio">Credit</label>
+                    <input type="radio" name="type" id="credit-radio" value="credit">
+                </div> -->
+                
+            </div>
+            
+
             <form method="POST" action="{{ url_for('clear')}}" onsubmit="return clearDatabase()">
                 <button type="submit">Clear</button>
             </form>

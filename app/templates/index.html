@@ -37,8 +37,13 @@
                 <table id="account-balances-table">
                     <thead>
                         <tr>
+                            <th>PostTax Balances</th>
+                        </tr>
+                    </thead>
+                    <thead>
+                        <tr>
                             {% for column in columns %}
-                                <th>{{ column }}</th>
+                                <th>{{ column |title}}</th>
                             {% endfor %}
                         </tr>
                     </thead>

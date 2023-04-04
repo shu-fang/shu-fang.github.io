@@ -2,7 +2,7 @@
 function displayAccount(event, tableid) {
     event.preventDefault();
 
-    // update table whenever new account is added
+    // update table whenever new account is added    
     var form = event.target;
     var data = new FormData(form);
     fetch('/submit', {
@@ -16,9 +16,19 @@ function displayAccount(event, tableid) {
         return response.json();
     })
     .then(data => {
+        var posttaxRadio = document.querySelector('input[name="tax_status"][value="posttax"]');
+        var pretaxRadio = document.querySelector('input[name="tax_status"][value="pretax"]');
+        if (posttaxRadio && posttaxRadio.checked) {
+            tableid = "posttax-accounts"
+            console.log("POSTTAX")
+        } else {
+            tableid = "pretax-accounts"
+            console.log("PRETAX")
+        }
+        console.log("table ", posttaxRadio, posttaxRadio.checked, pretaxRadio.checked, tableid);
         var table = document.querySelector(`#${tableid}`);
-        var row = table.insertRow(-1);
-        var cell = row.insertCell(0);
+        var lastRow = table.rows[table.rows.length - 1];
+        var cell = lastRow.insertCell(-1);
         cell.textContent = data.name;
         form.reset();
         let accountName = document.querySelector("#accountName");

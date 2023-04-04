@@ -9,41 +9,8 @@ body {
 a:visited { 
     text-decoration: none; 
     color: rgb(105, 104, 102); 
-   }
-input {
-    font-size: 20px;
-    color: #333;
-    padding: 8px 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    width: 100%;
-    box-sizing: border-box;
 }
 
-button {
-    background-color:rgb(154, 194, 163);
-    color: rgb(255, 255, 255);
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    text-decoration: none;
-    font-size: 20px;
-    font-weight: bold;
-}
-
-button:hover {
-    opacity: 0.8;
-}
-
-.pretax-element {
-    float:left;
-    width:40%;
-}
-
-.posttax-element{
-    float:right;
-    width:40%;
-}
 
 .other-pages {
     display:inline-block;
@@ -69,6 +36,94 @@ button:hover {
     margin-right: 10px;
 }
 
+/* input page */ 
+input {
+    font-size: 20px;
+    color: #333;
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+button {
+    background-color:rgb(154, 194, 163);
+    color: rgb(255, 255, 255);
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+button:hover {
+    opacity: 0.8;
+}
+
+/* accounts */
+.add-account-container {
+    width: 30%;
+    float:right;
+}
+#pretax-accounts td,
+#posttax-accounts td {
+    font-size:30px;
+}
+
+.pretax-element {
+    float:left;
+    width:40%;
+}
+
+.posttax-element{
+    float:left;
+    width:40%;
+    clear:both;
+}
+
+.tax-selection {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px auto;
+    flex-basis: 90%;
+    white-space: nowrap;
+}
+
+.tax-selection label {
+    font-size: 25px;
+    padding: 20px;
+    width: 300px;
+    text-align: center;
+}
+
+.tax-selection input[type="radio"] {
+    display: inline;
+    margin: 0 10px;
+}
+
+.type-selection {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px auto;
+    flex-basis: 90%;
+    white-space: nowrap;
+}
+
+.type-selection label {
+    font-size: 25px;
+    padding: 20px;
+    width: 300px;
+    text-align: center;
+}
+
+.type-selection input[type="radio"] {
+    display: inline;
+    margin: 0 10px;
+}
+
+/* overview page */ 
 .container {
     position:relative;
     left: 10px;
@@ -84,16 +139,19 @@ button:hover {
     background-color: rgb(252, 251, 249);
     text-align: left;
 }
+
 .key-metrics h5 {
     margin-top: 30px;
 }
+
 .account-container {
     position:relative;
     left: 10px;
     top: 300px;
-    width: 50%;
+    display: inline-block;
     height: 30%;
 }
+
 .account-balances {
     border: 1px solid rgba(0, 0, 0, 0);
     border-radius:25px;
@@ -104,6 +162,7 @@ button:hover {
 
 h4, h5, th {
     padding-left: 20px;
+    white-space: nowrap;
 }
 
 td { 
@@ -111,6 +170,7 @@ td {
     font-size:20px;
     padding-left:20px;
 }
+
 .chart-container {
     position: absolute;
     right: 30px;
