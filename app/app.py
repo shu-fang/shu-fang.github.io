@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, send_from_directory
 import sqlite3
-from .db import PretaxEntriesTable, PosttaxEntriesTable, AccountsDatabase
+from .db import PretaxEntriesTable, PosttaxEntriesTable, AccountsDatabase, AnalysisTable
 from datetime import datetime
 from flask import jsonify
 
@@ -13,11 +13,20 @@ def serve_css(path):
 accounts_db = AccountsDatabase()
 pretax_entries_table = PretaxEntriesTable()
 posttax_entries_table = PosttaxEntriesTable()
+analysis_table = AnalysisTable()
 
 @app.route('/')
 def index():
     pretax_balance, posttax_balance = accounts_db.get_latest_balances()
-    return render_template('index.html', pretax_balance=pretax_balance, posttax_balance=posttax_balance)
+    columns = analysis_table.get_column_names()
+    rows = analysis_table.get_all_entries()
+    conn = analysis_table.db_connection()
+    cursor = conn.cursor()
+    res = cursor.execute(f"SELECT * FROM {analysis_table.get_table_name()}")
+    print("analysis rows2:", analysis_table.get_table_name(), rows, res.fetchall())
+    return render_template('index.html', pretax_balance=pretax_balance,
+                           posttax_balance=posttax_balance,
+                           columns = columns, rows = rows)
 
 @app.route('/accounts')
 def accounts():
@@ -31,6 +40,7 @@ def input():
         accounts_db.update_account_balance(request)
         if 'posttax_submit' in request.form:
             posttax_entries_table.add_entry(request)
+            analysis_table.recalculate(posttax_entries_table)
         elif 'pretax_submit' in request.form:
             pretax_entries_table.add_entry(request)
         else:
@@ -67,6 +77,7 @@ def submit():
         pretax_entries_table.add_column(request)
     else:
         posttax_entries_table.add_column(request)
+        analysis_table.recalculate(posttax_entries_table)
     new_type = "placeholder"
     return jsonify({'name': request.form['accountName'], 'type': new_type, 'tax_status': tax_status}), 200
 
@@ -75,6 +86,7 @@ def clear():
     accounts_db.wipe_table()
     pretax_entries_table.wipe_table()
     posttax_entries_table.wipe_table()
+    analysis_table.wipe_table()
     return "Database cleared", 200
 
 @app.route('/data')

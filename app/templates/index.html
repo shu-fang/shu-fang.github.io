@@ -34,12 +34,23 @@
         </div>
         <div class="account-container">
             <div class="account-balances">
-                <table id="account-balances-table"> 
+                <table id="account-balances-table">
                     <thead>
                         <tr>
-                            <th>"will add Balance | Date | cashflow table later"</th>
+                            {% for column in columns %}
+                                <th>{{ column }}</th>
+                            {% endfor %}
                         </tr>
-                    
+                    </thead>
+                    <tbody>
+                        {% for row in rows %}
+                            <tr>
+                                {% for value in row %}
+                                    <td>{{ value }}</td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
                 </table>
             </div>
         </div>

@@ -51,6 +51,25 @@ class Database:
 
     def get_table_name(self):
         return self.name
+
+    def get_column_names(self):
+        conn = self.db_connection()
+        cursor = conn.cursor()
+
+        # Execute a query to get the column names of the table
+        cursor.execute(f"PRAGMA table_info({self.name})")
+        columns = [column[1] for column in cursor.fetchall()]
+
+        conn.close()
+        return columns
+    
+    def get_all_entries(self):
+        conn = self.db_connection()
+        cursor = conn.cursor()
+        cursor.execute(f"SELECT * FROM {self.name}")
+        rows = cursor.fetchall()
+        conn.close()
+        return rows
     
 class AccountsDatabase(Database):
     def __init__(self):
@@ -78,7 +97,6 @@ class AccountsDatabase(Database):
         conn.commit()
         conn.close()
 
-        
     def update_account_balance(self, request):
         # update accounts table
         conn = self.db_connection()
@@ -173,8 +191,6 @@ class EntriesDatabase(Database):
         self.delete_table()
         self.make_table()
     
-    
-    
 class PretaxEntriesTable(EntriesDatabase):
     def __init__(self):
         super().__init__("PretaxEntries")
@@ -203,6 +219,36 @@ class AnalysisTable(Database):
         ])
     
     def wipe_table(self):
+        print("wipded")
         self.delete_table()
         self.make_table()
+    
+    def recalculate(self, posttax_table):
+        print("RECALCULATING...")
+        # self.wipe_table()
+        conn = self.db_connection()
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+
+        # Get all the entries
+        cursor.execute(f"SELECT * FROM {posttax_table.get_table_name()} ORDER BY date")
+        entries = cursor.fetchall()
+        
+        print("posttax entries3:", entries)
+        # Calculate the total balance and cash flow based on the entries
+        last_balance = 0
+        income = 0 # need to get income
+        for entry in entries:
+            entry_dict = dict(entry)
+            print(entry_dict)
+            date = entry['date']
+            income = entry['income']
+            balance = sum(value for key, value in entry_dict.items() if key not in ['date', 'income'])
+            cashflow = balance - last_balance 
+            spending = income - cashflow
+            print("inserting to:", self.name, date, balance, cashflow, spending, "")
+            cursor.execute(f"INSERT INTO {self.name} (date, balance, cashflow, spending, notes) VALUES (?, ?, ?, ?, ?)",
+                       (date, balance, cashflow, spending, ""))
+            last_balance = balance
+        conn.close()
     
