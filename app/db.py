@@ -28,11 +28,17 @@ class Database:
     def db_connection(self):
         conn = None
         try:
+            # conn = psycopg2.connect(
+            #     host="localhost",
+            #     database="mydb",
+            #     user="postgres",
+            #     password="1011"
+            # )
             conn = psycopg2.connect(
-                host="localhost",
-                database="mydb",
-                user="postgres",
-                password="1011"
+                host="ec2-44-215-1-253.compute-1.amazonaws.com",
+                database="dbuo39q163deq1",
+                user="bqjbebgamhjjpl",
+                password="edebb599b515cf273e761778f491d2c6f57299715c8cd99f3b298e000991f94b"
             )
         except psycopg2.Error as e:
             print(e)
