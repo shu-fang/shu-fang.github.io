@@ -1,9 +1,7 @@
 import sqlite3
-import psycopg2
+import psycopg2, os
 from psycopg2 import extras
 from datetime import date, datetime
-import os
-import dj_database_url
 
 
 class Database:
@@ -30,6 +28,7 @@ class Database:
 
     def db_connection(self):
         conn = None
+        DATABASE_URL = os.environ['DATABASE_URL']
         try:
             # conn = psycopg2.connect(
             #     host="localhost",
@@ -43,7 +42,7 @@ class Database:
             #     user="bqjbebgamhjjpl",
             #     password="edebb599b515cf273e761778f491d2c6f57299715c8cd99f3b298e000991f94b"
             # )
-            DATABASE_URL = os.environ['DATABASE_URL']
+            
             conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 
         except psycopg2.Error as e:
