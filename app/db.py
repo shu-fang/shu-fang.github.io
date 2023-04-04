@@ -163,6 +163,7 @@ class EntriesDatabase(Database):
     def add_column(self, request):
         conn = self.db_connection()
         cursor = conn.cursor()
+        print("adding", request.form['accountName'], " to  ", self.name)
         # Construct a new SQL query to add a new column to the 'entries' table
         sql_query = f"ALTER TABLE {self.name} ADD COLUMN '{request.form['accountName']}' INTEGER DEFAULT 0"
         # Execute the SQL query and commit the changes to the database

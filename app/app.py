@@ -67,14 +67,13 @@ def input():
                            pre_cursor=pre_cursor,
                            post_cursor=post_cursor)
 
-@app.route('/submit', methods=['POST'])
+@app.route('/submit', methods=['POST']) # adds new account
 def submit():
     # insert new account into accounts database
-    print("called")
     accounts_db.add_account(request)
     tax_status = request.form['tax_status']
     print("sta:", tax_status)
-    if tax_status == 'pretax':
+    if tax_status == 'pre-tax':
         print("column added to pretax")
         pretax_entries_table.add_column(request)
     else:
