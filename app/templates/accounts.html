@@ -6,15 +6,18 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" type="text/css" href="{{ url_for('serve_css', path='style.css') }}">
         <title>Wen's Budgeting Tool</title>
-        <div class="other-pages">
-            <ul>
-                <li><a href="{{ url_for('index') }}">Overview</a></li>
-                <li><a href="{{ url_for('input') }}">Input</a></li>
-                <li><a href="{{ url_for('accounts') }}">Accounts</a></li>
-            </ul>
-        </div>
+        
     </head>
     <body>
+        <div class="sidebar-container">
+            <div class="sidebar">
+                <ul>
+                    <li><a href="{{ url_for('index') }}">Overview</a></li>
+                    <li><a href="{{ url_for('input') }}">Input</a></li>
+                    <li class="current-page"><a href="{{ url_for('accounts') }}">Accounts</a></li>
+                </ul>
+            </div>
+        </div>
         <div class="wrapper">
             <div class="pretax-element">
                 <table id="pretax-accounts"> 
@@ -26,7 +29,6 @@
                         </td>
                     </tr>
                 </table>
-
             </div>
             <div class="posttax-element">
                 <table id="posttax-accounts"> 
@@ -38,7 +40,6 @@
                         </td>
                     </tr>
                 </table>
-                
             </div>
             <div class="add-account-container"> 
                 <form method="POST" action="{{ url_for('submit')}}" id="accountForm" onsubmit="return displayAccount(event, 'pretax-accounts')">
@@ -62,12 +63,11 @@
                 </div> -->
                 
             </div>
-            
-
             <form method="POST" action="{{ url_for('clear')}}" onsubmit="return clearDatabase()">
                 <button type="submit">Clear</button>
             </form>
         </div>
         <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+        
     </body>
 </html>
