@@ -96,17 +96,18 @@ def data():
     # TODO: pass date, pretax balance, posttax balance to chart --> need to change to separate date values 
     data = []
     for i in range(max(len(pretax_rows), len(posttax_rows))):
-        date = datetime.today()
+        date = datetime.today().strftime("%Y-%m-%d")
         pretaxBalance, posttaxBalance = 0, 0
         if i < len(pretax_rows):
             pretax_row = pretax_rows[i]
             pretaxBalance = sum([int(x) for x in pretax_row[1:]])
-            date = pretax_row[0]
+            # date = pretax_row[0]
+            print("date:", pretax_row[0])
         if i < len(posttax_rows):
             posttax_row = posttax_rows[i]
             posttaxBalance = sum([int(x) for x in posttax_row[1:]])
-            date = posttax_row[0]
-        
+            # date = posttax_row[0]
+        print("date:", pretax_row[0])
         data.append((date,pretaxBalance, posttaxBalance))
     conn.close()
     return jsonify(data)
