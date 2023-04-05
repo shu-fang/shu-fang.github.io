@@ -194,6 +194,7 @@ class EntriesDatabase(Database):
     def make_table(self):
         super().make_table([
             "date DATE NOT NULL DEFAULT CURRENT_DATE",
+            "notes TEXT DEFAULT ''",
             *self.columns + [f"CONSTRAINT unique_date_{self.name} UNIQUE (date)"]
         ])
     
@@ -293,7 +294,7 @@ class AnalysisTable(Database):
             entry_dict = dict(entry)
             date = entry['date']
             income = entry['income']
-            balance = sum(value for key, value in entry_dict.items() if key not in ['date', 'income'])
+            balance = sum(value for key, value in entry_dict.items() if key not in ['date', 'income', 'notes'])
             cashflow = balance - last_balance 
             spending = income - cashflow
             cursor.execute(f"INSERT INTO {self.name} (date, balance, cashflow, spending, notes) VALUES (DATE %s, %s,%s, %s, %s)",

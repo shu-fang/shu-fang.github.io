@@ -12,10 +12,6 @@ body {
     font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     display: flex;
 }
-a:visited { 
-    text-decoration: none; 
-    color: rgb(105, 104, 102); 
-}
 
 .sidebar-container {
     display:flex;
@@ -64,17 +60,17 @@ input[type="text"],
 input[type="number"],
 input[type="date"],
 input[type="radio"]:after{
-    border-radius:10px;
+    font-size: 20px;
+    font-family:monospace;
+    border-radius:30px;
     border-color: rgba(0, 0, 0, 0.185);
     border-width: 0.2ch;
     border-style: dashed;
     background-color: rgba(255, 255, 255, 0.945);
+    color: #695b5b;;
     width: 15ch;
-}
-
-input[type="date"] {
-    font-family: monospace;
-    color:#695b5b;
+    padding: 8px 10px;
+    box-sizing: border-box;
 }
 
 input[type='radio']:after,
@@ -95,7 +91,6 @@ input[type='radio']:checked:after {
 
 .wrapper {
     flex: 1 1 auto;
-    /* display: flex; */
     border-radius: 20px;
     background-color: #fffcf9;
 }
@@ -111,15 +106,6 @@ input[type='radio']:checked:after {
     border-style:double;
 }
 /* input page */ 
-input {
-    font-size: 20px;
-    color: #333;
-    padding: 8px 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    width: 90%;
-    box-sizing: border-box;
-}
 
 button {
     background-color:rgb(154, 194, 163);
@@ -274,6 +260,15 @@ button:hover {
 h4, h5, th {
     padding-left: 20px;
     white-space: nowrap;
+}
+
+h4 {
+    line-height: 10px;
+    text-align: left;
+}
+
+th {
+    font-weight:bolder;
 }
 
 td { 
