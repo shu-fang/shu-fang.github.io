@@ -1,4 +1,9 @@
 
+:root{
+    --DEBIT_POSTTAX_COLOR: rgb(72, 116, 43); 
+    --PRETAX_COLOR: rgb(116, 66, 43);
+}
+
 body {
     background-color:rgb(255, 244, 229);
     text-align:center;
@@ -48,13 +53,42 @@ body {
     color: #000;
 }
 
+input[type='radio'] {
+    display:none;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    outline:none;
+    border: none;
+}
+
 input[type="text"],
 input[type="number"],
-input[type="date"] {
+input[type="date"],
+input[type="radio"]:after{
     border-radius:10px;
-    border-color: transparent;
+    border-color: rgba(0, 0, 0, 0.185);
+    border-width: 0.2ch;
+    border-style: dashed;
     background-color: rgba(255, 255, 255, 0.945);
     width: 15ch;
+}
+
+
+input[type='radio']:after,
+input[type='radio']:checked:after {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    content: '';
+    background-color:rgba(255, 255, 255, 0);
+    display: flex;
+    visibility: visible;
+}
+
+input[type='radio']:checked:after {
+    border-color: #7eaa73d0;
+    background-color: #acd898d0;
 }
 
 .wrapper {
@@ -121,7 +155,8 @@ button:hover {
 /* accounts */
 .add-account-container {
     width: 30%;
-    float:right;
+    margin-left:auto;
+    margin-bottom:10px;
     bottom:10%;
     right:10%;
     position: absolute;
@@ -132,11 +167,17 @@ button:hover {
 }
 
 .pretax-element {
+    margin-top: 10%;
     float:left;
+    color:var(--DEBIT_POSTTAX_COLOR);
     width:40%;
+    margin-left: 5%;
 }
 
 .posttax-element{
+    margin-top: 10%;
+    margin-left: 5%;
+    color: var(--PRETAX_COLOR);
     float:left;
     width:40%;
     clear:both;
@@ -145,41 +186,41 @@ button:hover {
 .tax-selection {
     display: flex;
     justify-content: space-between;
-    margin: 10px auto;
+    margin: 0px 10px;
     flex-basis: 90%;
     white-space: nowrap;
+    align-items: center;
+    margin-top: 2%;
+    margin-bottom: 5%;
 }
 
 .tax-selection label {
     font-size: 25px;
-    padding: 20px;
-    width: 300px;
-    text-align: center;
+    display: inline;
 }
 
 .tax-selection input[type="radio"] {
     display: inline;
-    margin: 0 10px;
+    margin: 0px 10px;
 }
 
 .type-selection {
     display: flex;
     justify-content: space-between;
-    margin: 10px auto;
+    margin: 0px auto;
     flex-basis: 90%;
     white-space: nowrap;
 }
 
 .type-selection label {
     font-size: 25px;
-    padding: 20px;
     width: 300px;
     text-align: center;
 }
 
 .type-selection input[type="radio"] {
     display: inline;
-    margin: 0 10px;
+    margin: 0px 0px;
 }
 
 /* overview page */ 

@@ -24,7 +24,7 @@
                     <tr>
                         <td>
                             {% for account in pretax_accounts %}
-                                {{ account[0] }}{% if not loop.last %}  {% endif %}
+                                {{ account[0] }}{% if not loop.last %}   {% endif %}
                             {% endfor %}
                         </td>
                     </tr>
@@ -35,7 +35,7 @@
                     <tr>
                         <td>
                             {% for account in posttax_accounts %}
-                                {{ account[0] }}{% if not loop.last %}  {% endif %}
+                                {{ account[0] }}{% if not loop.last %}   {% endif %}
                             {% endfor %}
                         </td>
                     </tr>
