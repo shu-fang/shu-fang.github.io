@@ -27,19 +27,25 @@ class Database:
 
     def db_connection(self):
         conn = None
-        DATABASE_URL = os.environ['DATABASE_URL']
         try:
-            # conn = psycopg2.connect(
-            #     host="localhost",
-            #     database="mydb",
-            #     user="postgres",
-            #     password="1011"
-            # )
+            DATABASE_URL = os.environ['DATABASE_URL']
             conn = psycopg2.connect(DATABASE_URL, sslmode='require')
-
+            return conn
         except psycopg2.Error as e:
             print(e)
-        return conn
+        
+        try:
+            conn = psycopg2.connect(
+                host="localhost",
+                database="mydb",
+                user="postgres",
+                password="1011"
+            )
+            
+        
+        except psycopg2.Error as e:
+            print(e)
+        
     
     def delete_table(self):
         conn = self.db_connection()
