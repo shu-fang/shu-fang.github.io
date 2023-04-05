@@ -27,7 +27,7 @@ class Database:
 
     def db_connection(self):
         conn = None
-        if os.environ['USERNAME'] == 'lfang':
+        if 'USERNAME' in os.environ and os.environ['USERNAME'] == 'lfang':
             try:
                 conn = psycopg2.connect(
                     host="localhost",
