@@ -3,7 +3,7 @@ import psycopg2, os
 from psycopg2 import extras
 from datetime import date, datetime
 from enum import Enum
-
+from flask import abort
 
 class Tables(Enum):
     ACCOUNTS = "accounts"
@@ -17,7 +17,6 @@ class Database:
        return
     
     def make_table(self, fields):
-        print("making table ", self.name)
         try:
             conn = self.db_connection()
             cursor = conn.cursor()
@@ -26,7 +25,6 @@ class Database:
                 id SERIAL PRIMARY KEY,
                 {', '.join(fields)}
             )"""
-            print("query for", self.name, " : ", sql_query)
             cursor.execute(sql_query)
             conn.commit()
             conn.close()
@@ -80,9 +78,13 @@ class Database:
         return self.name
 
     def get_column_names(self):
+        
         conn = self.db_connection()
         cursor = conn.cursor()
-        cursor.execute(f"SELECT * FROM {self.name} LIMIT 0")
+        try:
+            cursor.execute(f"SELECT * FROM {self.name} LIMIT 0")
+        except Exception as e:
+            print(f"Error executing SQL query: {str(e)}")
         columns = [column[0] for column in cursor.description if column[0] != 'id']        
         conn.close()
         return columns
@@ -112,9 +114,9 @@ class AccountsDatabase(Database):
     def add_account(self, request):
         conn = self.db_connection()
         cursor = conn.cursor()
-        print("add request:", request.form)
+        
         new_name = request.form['addAccountName']
-        new_type = "placeholder"
+        new_type = request.form['type']
         new_tax_status = request.form['tax_status']
         sql = """INSERT INTO accounts (name, type, tax_status)
                     VALUES (%s, %s, %s)"""
@@ -128,7 +130,6 @@ class AccountsDatabase(Database):
         
         name = request.form['deleteAccountName']
         tax_status = request.form['tax_status']
-        print("delete request:", request.form, type(name))
         sql = f"""DELETE FROM accounts WHERE name = %s and tax_status = %s"""
         cursor = cursor.execute(sql, (name, tax_status))
         conn.commit()
@@ -163,7 +164,7 @@ class AccountsDatabase(Database):
         cursor.execute("SELECT name, balances FROM accounts")
         conn.close()
     
-    def get_latest_balances(self):
+    def get_latest_balance(self):
         conn = self.db_connection()
         cursor = conn.cursor()
         cursor.execute("SELECT name, balances, tax_status FROM accounts")
@@ -208,7 +209,6 @@ class EntriesDatabase(Database):
 
     def delete_column(self, request):
         column = request.form["deleteAccountName"]
-        print("deleting ", column, " from ", self.name)
         if column not in self.get_column_names():
             print("WARNING: account ", column, " does not exist")
             return 
@@ -229,11 +229,9 @@ class EntriesDatabase(Database):
         columns = [f'"{col}"' for col in accounts.keys()]
         
         values = ', '.join(['%s'] * len(accounts))
-        print("Adding entry to ", self.name)
         sql_query = f"INSERT INTO {self.name} ({', '.join(columns)}, date) VALUES ({values}, DATE %s) "\
             f"ON CONFLICT (date) DO UPDATE SET "\
             f"{', '.join([f'{col} = EXCLUDED.{col}' for col in columns if col != 'date'])};"
-        print("adding entry with query:", sql_query)
         params = [self.format_balance(value) for value in accounts.values()] + [entry_date]
         # Execute the SQL query and commit the changes to the database
         cursor.execute(sql_query, params)
@@ -243,11 +241,10 @@ class EntriesDatabase(Database):
     def wipe_table(self):
         self.delete_table()
         self.make_table()
-    
+
 class PretaxEntriesTable(EntriesDatabase):
     def __init__(self):
         self.name = str(Tables.PRETAX_ENTRIES.value)
-        print("xx:", Tables.PRETAX_ENTRIES.value)
         super().__init__(self.name)
 
 class PosttaxEntriesTable(EntriesDatabase):
@@ -303,17 +300,31 @@ class AnalysisTable(Database):
         conn.commit()
         conn.close()
 
+    def get_date_balance(self):
+        conn = self.db_connection()
+        cursor = conn.cursor()
+
+        cursor.execute(f"SELECT date, balance FROM {self.name} GROUP BY date, balance")
+        date_balances = cursor.fetchall()
+        conn.close()
+        return date_balances
+
 def addAccount(request, all_tables):
     # add account to account table, as column to entries table
+    # checking request validity 
+    for column in ['addAccountName', 'type', 'tax_status']:
+        if column not in request.form:
+            return False
+        
     all_tables[Tables.ACCOUNTS].add_account(request)
     tax_status = request.form['tax_status']
     if tax_status == 'pre-tax':
         all_tables[Tables.PRETAX_ENTRIES].add_column(request)
     else:
         all_tables[Tables.POSTTAX_ENTRIES].add_column(request)
+    return True 
 
 def deleteAccount(request, all_tables):
-    print("form:", request.form)
     tax_status = request.form['tax_status']
     all_tables[Tables.ACCOUNTS].delete_account(request)
     if tax_status == 'pre-tax':

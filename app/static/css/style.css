@@ -5,14 +5,20 @@
 }
 
 body {
-    background-color:rgb(255, 244, 229);
+    background-color:#555555;
     text-align:center;
-    color:rgb(48, 53, 48);
+
+    color:rgb(213, 224, 213);
     font-size: 24px;
-    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     display: flex;
 }
-
+.wrapper {
+    flex: 1 1 auto;
+    border-radius: 20px;
+    background-color: #242424;
+    color:#e6e6e6
+}
 .sidebar-container {
     display:flex;
     flex: 0 0 auto;
@@ -38,7 +44,7 @@ body {
 }
 
 .sidebar li.current-page {
-    background-color: #fffcf9;
+    background-color: #E18B5C;
 }
 
 .sidebar li a {
@@ -63,7 +69,7 @@ input[type="radio"]:after{
     font-size: 20px;
     font-family:monospace;
     border-radius:30px;
-    border-color: rgba(0, 0, 0, 0.185);
+    border-color: rgb(231, 231, 231);
     border-width: 0.2ch;
     border-style: dashed;
     background-color: rgba(255, 255, 255, 0.945);
@@ -79,20 +85,14 @@ input[type='radio']:checked:after {
     height: 35px;
     border-radius: 50%;
     content: '';
-    background-color:rgba(255, 255, 255, 0);
+    background-color:rgba(212, 212, 212, 0);
     display: flex;
     visibility: visible;
 }
 
 input[type='radio']:checked:after {
-    border-color: #7eaa73d0;
+    border-color: #e4e6e3f3;
     background-color: #acd898d0;
-}
-
-.wrapper {
-    flex: 1 1 auto;
-    border-radius: 20px;
-    background-color: #fffcf9;
 }
 
 .key-metrics,
@@ -108,7 +108,7 @@ input[type='radio']:checked:after {
 /* input page */ 
 
 button {
-    background-color:rgb(154, 194, 163);
+    background-color:#41924B;
     color: rgb(255, 255, 255);
     padding: 10px 20px;
     border: none;
@@ -180,46 +180,28 @@ button:hover {
     clear:both;
 }
 
-.tax-selection {
+.add-account-container {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.tax-selection, .type-selection {
+    display: flex;
+    justify-content: space-evenly;
     margin: 0px 10px;
     flex-basis: 90%;
     white-space: nowrap;
-    align-items: center;
     margin-top: 2%;
     margin-bottom: 5%;
 }
 
-.tax-selection label {
-    font-size: 25px;
-    display: inline;
-}
-
-.tax-selection input[type="radio"] {
+.tax-selection input[type="radio"],
+.type-selection input[type="radio"] {
     display: inline;
     margin: 0px 10px;
 }
-
-.type-selection {
-    display: flex;
-    justify-content: space-between;
-    margin: 0px auto;
-    flex-basis: 90%;
-    white-space: nowrap;
-}
-
-.type-selection label {
-    font-size: 25px;
-    width: 300px;
-    text-align: center;
-}
-
-.type-selection input[type="radio"] {
-    display: inline;
-    margin: 0px 0px;
-}
-
 
 /* overview page */ 
 .container {
@@ -249,6 +231,7 @@ button:hover {
     display: inline-block;
     height: 30%;
 }
+
 
 .account-balances {
     border: 1px solid rgba(0, 0, 0, 0);

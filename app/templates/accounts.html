@@ -45,7 +45,7 @@
                 <div class="delete-account-container"> 
                     <form method="DELETE" action="/delete_account" id="deleteAccountForm" onsubmit="return deleteAccount()">
                         <label for="deleteAccountName"></label>
-                        <input type="text" id="deleteAccountName" name="deleteAccountName">
+                        <input type="text" id="deleteAccountName" name="deleteAccountName" required>
                         
                         <div class="tax-selection" id="tax_status_delete">
                             <label for="pretax-radio">Pre-tax</label>
@@ -62,26 +62,24 @@
                     </form>
                 </div>
                 <div class="add-account-container"> 
-                    <form method="POST" action="add_account" id="addAccountForm" onsubmit="return addAccount()">
+                    <form method="POST" action="/add_account" id="addAccountForm" onsubmit="return addAccount()">
                         <label for="addAccountName"></label>
-                        <input type="text" id="addAccountName" name="addAccountName">
-                        
+                        <input type="text" id="addAccountName" name="addAccountName" required>
                         <div class="tax-selection", id="tax_status_add">
                             <label for="pretax-radio">Pre-tax</label>
-                                <input type="radio" name="tax_status" id="pretax-radio-add" value="pre-tax">
+                                <input type="radio" name="tax_status" id="pretax-radio-add" value="pre-tax" required>
                             <label for="posttax-radio">Post-tax</label>
-                                <input type="radio" name="tax_status" id="posttax-radio-add" value="post-tax">
+                                <input type="radio" name="tax_status" id="posttax-radio-add" value="post-tax" required>
+                        </div>
+                        <div class="type-selection">
+                            <label for="debit-radio">Debit</label>
+                            <input type="radio" name="type" id="debit-radio" value="debit" required>
+                            <label for="credit-radio">Credit</label>
+                            <input type="radio" name="type" id="credit-radio" value="credit" required>
                         </div>
                         <button id="addPostTax"> Add Account</button>     
                     </form>
-                    
-                    <!-- <div class="type-selection">
-                        <label for="debit-radio">Debit</label>
-                        <input type="radio" name="type" id="debit-radio" value="debit">
-                        <label for="credit-radio">Credit</label>
-                        <input type="radio" name="type" id="credit-radio" value="credit">
-                    </div> -->
-                    
+                    <div id="accounts-error-message" class="error-message"></div>
                 </div>
                 
             </div>

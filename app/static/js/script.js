@@ -53,7 +53,7 @@ function addAccount() {
         window.location.reload();
     })
     .catch(error => {
-        console.log("add database error:", error);
+        console.log("add database error:", error.message);
     })
 }
 
@@ -96,42 +96,56 @@ function createChart(){
     fetch('/data')
     .then(response => response.json())
     .then(data => {
-        data.sort((a, b) => (a[0] > b[0]) ? 1 : -1);
         console.log("sorted data:", data)
         // Extract the dates and balances from the data
         const dates = data.map(entry => entry[0]);
-        const pretaxBalances = data.map(entry => entry[1]);
-        const posttaxBalances = data.map(entry => entry[2])
+        const posttaxBalance = data.map(entry => entry[1]);
         // Create a new Chart.js chart using the retrieved data
         const ctx = document.getElementById('balance-chart').getContext('2d');
         const chart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: dates,
-            datasets: [
-                {
-                    label: 'Pretax Account Balance',
-                    data: pretaxBalances,
-                    fill: false,
-                    borderColor: 'rgb(75, 192, 192)',
-                    tension: 0.1
-                },
-                {
-                    label: 'Aftertax Account Balance',
-                    data: posttaxBalances,
-                    fill: false,
-                    borderColor: 'rgb(192, 75, 192)',
-                    tension: 0.1
+            type: 'line',
+            data: {
+                labels: dates,
+                datasets: [
+                    {
+                        label: 'Posttaax Account Balance',
+                        data: posttaxBalance,
+                        fill: false,
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1
+                    }
+                ]
+            }, options: {
+                scales: {
+                    yAxes: [{
+                        type: 'linear',
+                        position: 'left',
+                        ticks: {
+                            fontColor: 'white' // set the font color of the y-axis ticks to white
+                        },
+                        gridLines: {
+                            color: 'rgba(255,255,255,0.1)' // set the color of the y-axis grid lines to white with 10% opacity
+                        }
+                    }],
+                    xAxes: [{
+                        ticks: {
+                            fontColor: 'white' // set the font color of the x-axis ticks to white
+                        },
+                        gridLines: {
+                            color: 'rgba(255,255,255,0.1)' // set the color of the x-axis grid lines to white with 10% opacity
+                        }
+                    }]
                 }
-            ]
-        }, options: {
-            scales: {
-                yAxes: [{
-                    type: 'linear',
-                    position: 'left'
-                }]
+            },
+            elements: {
+                point: {
+                    backgroundColor: 'white', // set the color of the data points to white
+                    borderColor: 'white' // set the color of the data point borders to white
+                },
+                line: {
+                    borderColor: 'white' // set the color of the lines to white
+                }
             }
-        }
         });
     });
 }
