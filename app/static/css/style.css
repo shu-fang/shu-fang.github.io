@@ -10,14 +10,11 @@ body {
     color:rgb(48, 53, 48);
     font-size: 24px;
     font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
 }
 a:visited { 
     text-decoration: none; 
     color: rgb(105, 104, 102); 
-}
-
-body {
-    display: flex;
 }
 
 .sidebar-container {
@@ -47,6 +44,7 @@ body {
 .sidebar li.current-page {
     background-color: #fffcf9;
 }
+
 .sidebar li a {
     display: block;
     text-decoration: none;
@@ -115,7 +113,7 @@ input {
     padding: 8px 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    width: 100%;
+    width: 90%;
     box-sizing: border-box;
 }
 
@@ -132,6 +130,11 @@ button {
 
 button:hover {
     opacity: 0.8;
+}
+
+.entry_history {
+    max-height: 30%;
+    overflow-y: auto;
 }
 
 #posttax_balance_input_table,
@@ -152,15 +155,19 @@ button:hover {
 .entry_history {
     margin-top: 5%;
 }
+
 /* accounts */
-.add-account-container {
-    width: 30%;
-    margin-left:auto;
-    margin-bottom:10px;
-    bottom:10%;
-    right:10%;
-    position: absolute;
+.account-actions {
+    left: 0;
+    margin-top:60%;
+    width: 100%;
+    display: flex;
+    justify-content:space-between;
+    align-items: center;
+    background-color: #f0f0f000; /* optional background color */
+    padding: 10px; /* optional padding */
 }
+
 #pretax-accounts td,
 #posttax-accounts td {
     font-size:30px;
@@ -222,6 +229,7 @@ button:hover {
     display: inline;
     margin: 0px 0px;
 }
+
 
 /* overview page */ 
 .container {

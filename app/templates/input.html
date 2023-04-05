@@ -82,8 +82,8 @@
                         <th>PostTax Entry History:</th>
                     </tr>
                     <tr>
-                        {% for column in post_cursor.description %}
-                            <th>{{ column[0] }}</th>
+                        {% for column in posttax_columns %}
+                            <th>{{ column }}</th>
                         {% endfor %}
                     </tr>
                     <tbody>
@@ -101,8 +101,8 @@
                         <th>Pretax Entry History:</th>
                     </tr>
                     <tr>
-                        {% for column in pre_cursor.description %}
-                            <th>{{ column[0] }}</th>
+                        {% for column in pretax_columns %}
+                            <th>{{ column }}</th>
                         {% endfor %}
                     </tr>
                     <tbody>

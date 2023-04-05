@@ -37,33 +37,19 @@ def input():
         if 'posttax_submit' in request.form:
             posttax_entries_table.add_entry(request)
             analysis_table.recalculate(posttax_entries_table)
-            conn = analysis_table.db_connection()
-            conn.close()
         elif 'pretax_submit' in request.form:
             pretax_entries_table.add_entry(request)
         else:
             print("WARNING: request from input page not recognized")
-    # get all entries 
-    conn = posttax_entries_table.db_connection()
-    post_cursor = conn.cursor()
-    post_cursor.execute(f'SELECT * FROM {posttax_entries_table.get_table_name()}')
-    
-    posttax_entries = post_cursor.fetchall()
-    conn.close()
 
-    conn = pretax_entries_table.db_connection()
-    pre_cursor = conn.cursor()
-    pre_cursor.execute(f'SELECT * FROM {pretax_entries_table.get_table_name()}')
-    pretax_entries = pre_cursor.fetchall()
-    conn.close()
     return render_template('input.html', 
                            current_date=datetime.today().strftime('%Y-%m-%d'), 
                            pretax_accounts=accounts_db.get_accounts("pre-tax"), 
                            posttax_accounts=accounts_db.get_accounts("post-tax"), 
-                           posttax_entries=posttax_entries,
-                           pretax_entries=pretax_entries,
-                           pre_cursor=pre_cursor,
-                           post_cursor=post_cursor)
+                           posttax_entries=posttax_entries_table.get_all_entries(),
+                           pretax_entries=pretax_entries_table.get_all_entries(),
+                           pretax_columns = pretax_entries_table.get_column_names(),
+                           posttax_columns = posttax_entries_table.get_column_names())
 
 @app.route('/submit', methods=['POST']) # adds new account
 def submit():

@@ -41,31 +41,50 @@
                     </tr>
                 </table>
             </div>
-            <div class="add-account-container"> 
-                <form method="POST" action="{{ url_for('submit')}}" id="accountForm" onsubmit="return displayAccount(event, 'pretax-accounts')">
-                    <label for="accountName">Add new account:</label>
-                    <input type="text" id="accountName" name="accountName">
+            <div class="account-actions">
+                <div class="delete-account-container"> 
+                    <form method="POST" action="{{ url_for('submit')}}" id="accountForm" onsubmit="return displayAccount(event, 'pretax-accounts')">
+                        <label for="accountName"></label>
+                        <input type="text" id="accountName" name="accountName">
+                        
+                        <div class="tax-selection", id="tax_status">
+                            <label for="pretax-radio">Pre-tax</label>
+                                <input type="radio" name="tax_status" id="pretax-radio" value="pre-tax">
+                            <label for="posttax-radio">Post-tax</label>
+                                <input type="radio" name="tax_status" id="posttax-radio" value="post-tax">
+                        </div>
+                        <button id="deleteAccount"> Delete Account</button>     
+                    </form>
+                </div>
+                <div class="clear-account-container"> 
+                    <form method="POST" action="{{ url_for('clear')}}" onsubmit="return clearDatabase()">
+                        <button type="submit">Clear</button>
+                    </form>
+                </div>
+                <div class="add-account-container"> 
+                    <form method="POST" action="{{ url_for('submit')}}" id="accountForm" onsubmit="return displayAccount(event, 'pretax-accounts')">
+                        <label for="accountName"></label>
+                        <input type="text" id="accountName" name="accountName">
+                        
+                        <div class="tax-selection", id="tax_status">
+                            <label for="pretax-radio">Pre-tax</label>
+                                <input type="radio" name="tax_status" id="pretax-radio" value="pre-tax">
+                            <label for="posttax-radio">Post-tax</label>
+                                <input type="radio" name="tax_status" id="posttax-radio" value="post-tax">
+                        </div>
+                        <button id="addPostTax"> Add Account</button>     
+                    </form>
                     
-                    <div class="tax-selection", id="tax_status">
-                        <label for="pretax-radio">Pre-tax</label>
-                            <input type="radio" name="tax_status" id="pretax-radio" value="pre-tax">
-                        <label for="posttax-radio">Post-tax</label>
-                            <input type="radio" name="tax_status" id="posttax-radio" value="post-tax">
-                    </div>
-                    <button id="addPostTax"> Submit </button>
-                </form>
-                
-                <!-- <div class="type-selection">
-                    <label for="debit-radio">Debit</label>
-                    <input type="radio" name="type" id="debit-radio" value="debit">
-                    <label for="credit-radio">Credit</label>
-                    <input type="radio" name="type" id="credit-radio" value="credit">
-                </div> -->
+                    <!-- <div class="type-selection">
+                        <label for="debit-radio">Debit</label>
+                        <input type="radio" name="type" id="debit-radio" value="debit">
+                        <label for="credit-radio">Credit</label>
+                        <input type="radio" name="type" id="credit-radio" value="credit">
+                    </div> -->
+                    
+                </div>
                 
             </div>
-            <form method="POST" action="{{ url_for('clear')}}" onsubmit="return clearDatabase()">
-                <button type="submit">Clear</button>
-            </form>
         </div>
         <script src="{{ url_for('static', filename='js/script.js') }}"></script>
         
