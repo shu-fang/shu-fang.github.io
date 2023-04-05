@@ -2,7 +2,7 @@ import sqlite3
 import psycopg2, os
 from psycopg2 import extras
 from datetime import date, datetime
-
+from enum import Enum
 
 class Database:
     def __init__(self, name): 
@@ -103,12 +103,25 @@ class AccountsDatabase(Database):
     def add_account(self, request):
         conn = self.db_connection()
         cursor = conn.cursor()
-        new_name = request.form['accountName']
+        print("add request:", request.form)
+        new_name = request.form['addAccountName']
         new_type = "placeholder"
         new_tax_status = request.form['tax_status']
         sql = """INSERT INTO accounts (name, type, tax_status)
                     VALUES (%s, %s, %s)"""
         cursor = cursor.execute(sql, (new_name, new_type, new_tax_status))
+        conn.commit()
+        conn.close()
+    
+    def delete_account(self, request):
+        conn = self.db_connection()
+        cursor = conn.cursor()
+        
+        name = request.form['deleteAccountName']
+        tax_status = request.form['tax_status']
+        print("delete request:", request.form, type(name))
+        sql = f"""DELETE FROM accounts WHERE name = %s and tax_status = %s"""
+        cursor = cursor.execute(sql, (name, tax_status))
         conn.commit()
         conn.close()
 
@@ -178,10 +191,21 @@ class EntriesDatabase(Database):
     def add_column(self, request):
         conn = self.db_connection()
         cursor = conn.cursor()
-        # Construct a new SQL query to add a new column to the 'entries' table
-        sql_query = f'ALTER TABLE {self.name} ADD COLUMN "{request.form["accountName"]}" INTEGER DEFAULT 0'
-        # Execute the SQL query and commit the changes to the database
+        sql_query = f'ALTER TABLE {self.name} ADD COLUMN "{request.form["addAccountName"]}" INTEGER DEFAULT 0'
         cursor.execute(sql_query)
+        conn.commit()
+        conn.close()
+
+    def delete_column(self, request):
+        column = request.form["deleteAccountName"]
+        print("deleting ", column, " from ", self.name)
+        if column not in self.get_column_names():
+            print("WARNING: account ", column, " does not exist")
+            return 
+        conn = self.db_connection()
+        cursor = conn.cursor()
+        sql_query = f"""DELETE FROM accounts WHERE name = %s"""
+        cursor.execute(sql_query, (column,))
         conn.commit()
         conn.close()
 
@@ -263,10 +287,43 @@ class AnalysisTable(Database):
         conn.commit()
         conn.close()
 
-    # def get_all_entries(self):
-    #     conn = self.db_connection()
-    #     cursor = conn.cursor()
-    #     cursor.execute(f"SELECT * FROM AnalysisTable")
-    #     rows = cursor.fetchall()
-    #     conn.close()
-    #     return rows
+class Tables(Enum):
+    ACCOUNTS = "accounts"
+    POSTTAX_ENTRIES = "PosttaxEntries"
+    PRETAX_ENTRIES = "PretaxEntries"
+    ANALYSIS = "AnalysisTable"
+
+def addAccount(request, all_tables):
+    # add account to account table, as column to entries table
+    all_tables[Tables.ACCOUNTS].add_account(request)
+    tax_status = request.form['tax_status']
+    if tax_status == 'pre-tax':
+        all_tables[Tables.PRETAX_ENTRIES].add_column(request)
+    else:
+        all_tables[Tables.POSTTAX_ENTRIES].add_column(request)
+
+def deleteAccount(request, all_tables):
+    print("form:", request.form)
+    tax_status = request.form['tax_status']
+    all_tables[Tables.ACCOUNTS].delete_account(request)
+    if tax_status == 'pre-tax':
+        all_tables[Tables.PRETAX_ENTRIES].delete_column(request)
+    elif tax_status == 'post-tax':
+        all_tables[Tables.POSTTAX_ENTRIES].delete_column(request)
+
+    all_tables[Tables.ANALYSIS].recalculate(all_tables[Tables.POSTTAX_ENTRIES])
+    
+def wipeAllTables(tables):
+    for table in tables.values():
+        table.wipe_table()
+
+def addNewEntry(request, all_tables):
+    if request.method == 'POST':
+        all_tables[Tables.ACCOUNTS].update_account_balance(request)
+        if 'posttax_submit' in request.form:
+            Tables.POSTTAX_ENTRIES.add_entry(request)
+            all_tables[Tables.ANALYSIS].recalculate(all_tables[Tables.POSTTAX_ENTRIES])
+        elif 'pretax_submit' in request.form:
+            all_tables[Tables.PRETAX_ENTRIES].add_entry(request)
+        else:
+            print("WARNING: request from input page not recognized")

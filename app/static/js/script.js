@@ -1,11 +1,48 @@
 
-function displayAccount(event, tableid) {
-    event.preventDefault();
+// function displayAccount(event) {
+//     event.preventDefault();
 
-    // update table whenever new account is added    
+//     // update table whenever new account is added    
+//     var form = event.target;
+//     var data = new FormData(form);
+//     fetch('/submit', {
+//         method: 'POST',
+//         body: data
+//     })
+//     .then(response => {
+//         if (!response.ok) {
+//             throw new Error('Network response was not ok');
+//         }
+//         return response.json();
+//     })
+//     .then(data => {
+//         var posttaxRadio = document.querySelector('input[name="tax_status"][value="post-tax"]');
+//         var pretaxRadio = document.querySelector('input[name="tax_status"][value="pre-tax"]');
+//         if (posttaxRadio && posttaxRadio.checked) {
+//             tableid = "posttax-accounts"
+//         } else {
+//             tableid = "pretax-accounts"
+//         }
+//         var table = document.querySelector(`#${tableid}`);
+//         var lastRow = table.rows[table.rows.length - 1];
+//         var cell = lastRow.insertCell(-1);
+//         cell.textContent = data.name;
+//         form.reset();
+//         let accountName = document.querySelector("#accountName");
+//         accountName.value = "";
+//     })
+//     .catch(error => {
+//         console.log("error:", error);
+//     });
+    
+//     return false;
+// }
+
+function addAccount() {
+    event.preventDefault();
     var form = event.target;
     var data = new FormData(form);
-    fetch('/submit', {
+    fetch('/add_account', {
         method: 'POST',
         body: data
     })
@@ -13,32 +50,30 @@ function displayAccount(event, tableid) {
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
-        return response.json();
-    })
-    .then(data => {
-        var posttaxRadio = document.querySelector('input[name="tax_status"][value="post-tax"]');
-        var pretaxRadio = document.querySelector('input[name="tax_status"][value="pre-tax"]');
-        if (posttaxRadio && posttaxRadio.checked) {
-            tableid = "posttax-accounts"
-            console.log("POSTTAX")
-        } else {
-            tableid = "pretax-accounts"
-            console.log("PRETAX")
-        }
-        console.log("table ", posttaxRadio, posttaxRadio.checked, pretaxRadio.checked, tableid);
-        var table = document.querySelector(`#${tableid}`);
-        var lastRow = table.rows[table.rows.length - 1];
-        var cell = lastRow.insertCell(-1);
-        cell.textContent = data.name;
-        form.reset();
-        let accountName = document.querySelector("#accountName");
-        accountName.value = "";
+        window.location.reload();
     })
     .catch(error => {
-        console.log("error:", error);
-    });
-    
-    return false;
+        console.log("add database error:", error);
+    })
+}
+
+function deleteAccount() {
+    event.preventDefault();
+    var form = event.target;
+    var data = new FormData(form);
+    fetch('/delete_account', {
+        method: 'DELETE',
+        body: data
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        window.location.reload();
+    })
+    .catch(error => {
+        console.log("delete database error:", error);
+    })
 }
 
 function clearDatabase() {
