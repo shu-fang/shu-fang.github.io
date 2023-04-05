@@ -142,18 +142,19 @@ class AccountsDatabase(Database):
 
         # update account balance
         
-        table = ""
         if 'pretax_submit' in request.form:
-            table = "PretaxEntries"
+            table = Tables.PRETAX_ENTRIES.value
         elif 'posttax_submit' in request.form:
-            table = "PosttaxEntries"
+            table = Tables.POSTTAX_ENTRIES.value
         else:
             print("WARNING: request form not recognized")
         cursor.execute(f"SELECT MAX(date) FROM {table}")
         latest_date = cursor.fetchone()[0]
         
         entry_date = datetime.strptime(request.form['entry_date'], '%Y-%m-%d').date()
+        print("latest, etnry date:", latest_date, entry_date)
         if request.method == 'POST' and (not latest_date or entry_date >= latest_date):
+            print("here")
             for account in request.form:
                 name = account
                 balance = self.format_balance(request.form[account])

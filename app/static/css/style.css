@@ -1,11 +1,11 @@
 
 :root{
-    --DEBIT_POSTTAX_COLOR: rgb(72, 116, 43); 
-    --PRETAX_COLOR: rgb(116, 66, 43);
+    --DEBIT_POSTTAX_COLOR: rgb(245, 231, 212); 
+    --PRETAX_COLOR: rgb(245, 231, 212);
 }
 
 body {
-    background-color:#555555;
+    background-color:#3b4049;
     text-align:center;
 
     color:rgb(213, 224, 213);
@@ -16,7 +16,7 @@ body {
 .wrapper {
     flex: 1 1 auto;
     border-radius: 20px;
-    background-color: #242424;
+    background-color: #282b30;
     color:#e6e6e6
 }
 .sidebar-container {
@@ -50,7 +50,7 @@ body {
 .sidebar li a {
     display: block;
     text-decoration: none;
-    color: #000;
+    color: #ffffff;
 }
 
 input[type='radio'] {
@@ -77,6 +77,7 @@ input[type="radio"]:after{
     width: 15ch;
     padding: 8px 10px;
     box-sizing: border-box;
+    margin-bottom: 6%;
 }
 
 input[type='radio']:after,
@@ -99,11 +100,13 @@ input[type='radio']:checked:after {
 .account-container,
 .balance_input_table,
 .entry_history {
-    border-radius:25px;
+    border-radius:15px;
     padding: 20px;
-    border-color: #f8e7d0;
-    border-width:0.5ch;
-    border-style:double;
+    border-color: #bebebe;
+    border-width:0.1ch;
+    border-style:groove;
+    margin-left:2%;
+    margin-right:2%;
 }
 /* input page */ 
 
@@ -112,10 +115,11 @@ button {
     color: rgb(255, 255, 255);
     padding: 10px 20px;
     border: none;
-    border-radius: 5px;
+    border-radius: 20px;
     text-decoration: none;
     font-size: 20px;
     font-weight: bold;
+    margin-top:5%;
 }
 
 button:hover {
@@ -123,7 +127,7 @@ button:hover {
 }
 
 .entry_history {
-    max-height: 30%;
+    height: 40%;
     overflow-y: auto;
 }
 
@@ -216,8 +220,9 @@ button:hover {
     display:inline-block;
     text-align: left;
     margin-top: 15%;
-    height: 50%;
-    width: 70%;
+    margin-left: 10%;
+    height: 80%;
+    width: 80%;
 }
 
 .key-metrics h5 {

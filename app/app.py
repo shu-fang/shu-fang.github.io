@@ -28,7 +28,7 @@ def index():
 def accounts():
     return render_template('accounts.html', 
                            pretax_accounts=all_tables[Tables.ACCOUNTS].get_accounts('pre-tax'), 
-                           posttax_accounts = all_tables[Tables.ACCOUNTS].get_accounts('post-tax'))
+                           posttax_accounts=all_tables[Tables.ACCOUNTS].get_accounts('post-tax'))
 
 @app.route('/input', methods=['GET','POST'])
 def input():
@@ -44,24 +44,11 @@ def input():
                            pretax_columns = all_tables[Tables.PRETAX_ENTRIES].get_column_names(),
                            posttax_columns = all_tables[Tables.POSTTAX_ENTRIES].get_column_names())
 
-# @app.route('/submit', methods = ['POST', 'DELETE'])
-# def submit():
-#     print("submit triggered", request.form)
-#     form_data = request.form
-#     if 'addAccountName' in form_data:
-#         return add_account(request)
-#     elif 'deleteAccountName' in form_data:
-#         return delete_account(request)
-#     else:
-#         return "Invalid form data", 400
-    
 @app.route('/add_account', methods=['POST', 'GET']) 
 def add_account():
-    print("add account triggered")
     # adds new account
     status = addAccount(request, all_tables)
     if not status:
-        print("Returning Here")
         return jsonify({'error':"Error adding account"}), 400
     return jsonify({'name': request.form['addAccountName'], 'type': request.form['type'],
                     'tax_status': request.form['tax_status']}), 200
