@@ -27,15 +27,15 @@ class Database:
 
     def db_connection(self):
         conn = None
-        # DATABASE_URL = os.environ['DATABASE_URL']
+        DATABASE_URL = os.environ['DATABASE_URL']
         try:
-            conn = psycopg2.connect(
-                host="localhost",
-                database="mydb",
-                user="postgres",
-                password="1011"
-            )
-            # conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+            # conn = psycopg2.connect(
+            #     host="localhost",
+            #     database="mydb",
+            #     user="postgres",
+            #     password="1011"
+            # )
+            conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 
         except psycopg2.Error as e:
             print(e)
