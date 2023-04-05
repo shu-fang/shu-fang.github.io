@@ -72,6 +72,10 @@ input[type="radio"]:after{
     width: 15ch;
 }
 
+input[type="date"] {
+    font-family: monospace;
+    color:#695b5b;
+}
 
 input[type='radio']:after,
 input[type='radio']:checked:after {

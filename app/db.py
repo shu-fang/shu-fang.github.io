@@ -4,12 +4,20 @@ from psycopg2 import extras
 from datetime import date, datetime
 from enum import Enum
 
+
+class Tables(Enum):
+    ACCOUNTS = "accounts"
+    POSTTAX_ENTRIES = "PosttaxEntries"
+    PRETAX_ENTRIES = "PretaxEntries"
+    ANALYSIS = "AnalysisTable"
+    
 class Database:
     def __init__(self, name): 
        self.name = name
        return
     
     def make_table(self, fields):
+        print("making table ", self.name)
         try:
             conn = self.db_connection()
             cursor = conn.cursor()
@@ -18,6 +26,7 @@ class Database:
                 id SERIAL PRIMARY KEY,
                 {', '.join(fields)}
             )"""
+            print("query for", self.name, " : ", sql_query)
             cursor.execute(sql_query)
             conn.commit()
             conn.close()
@@ -97,7 +106,7 @@ class AccountsDatabase(Database):
             "name text NOT NULL DEFAULT 'unknown'",
             "type text NOT NULL DEFAULT 'unknown'",
             "tax_status text NOT NULL DEFAULT 'unknown'",
-            "balances text NOT NULL DEFAULT '0'"
+            "balances text NOT NULL DEFAULT '0'",
         ])
     
     def add_account(self, request):
@@ -185,7 +194,7 @@ class EntriesDatabase(Database):
     def make_table(self):
         super().make_table([
             "date DATE NOT NULL DEFAULT CURRENT_DATE",
-            *self.columns
+            *self.columns + [f"CONSTRAINT unique_date_{self.name} UNIQUE (date)"]
         ])
     
     def add_column(self, request):
@@ -219,8 +228,11 @@ class EntriesDatabase(Database):
         columns = [f'"{col}"' for col in accounts.keys()]
         
         values = ', '.join(['%s'] * len(accounts))
-        
-        sql_query = f"INSERT INTO {self.name} ({', '.join(columns)}, date) VALUES ({values}, DATE %s)"
+        print("Adding entry to ", self.name)
+        sql_query = f"INSERT INTO {self.name} ({', '.join(columns)}, date) VALUES ({values}, DATE %s) "\
+            f"ON CONFLICT (date) DO UPDATE SET "\
+            f"{', '.join([f'{col} = EXCLUDED.{col}' for col in columns if col != 'date'])};"
+        print("adding entry with query:", sql_query)
         params = [self.format_balance(value) for value in accounts.values()] + [entry_date]
         # Execute the SQL query and commit the changes to the database
         cursor.execute(sql_query, params)
@@ -233,11 +245,14 @@ class EntriesDatabase(Database):
     
 class PretaxEntriesTable(EntriesDatabase):
     def __init__(self):
-        super().__init__("PretaxEntries")
+        self.name = str(Tables.PRETAX_ENTRIES.value)
+        print("xx:", Tables.PRETAX_ENTRIES.value)
+        super().__init__(self.name)
 
 class PosttaxEntriesTable(EntriesDatabase):
     def __init__(self):
-        super().__init__("PosttaxEntries", 
+        self.name = str(Tables.POSTTAX_ENTRIES.value)
+        super().__init__(self.name, 
                          ["income INTEGER NOT NULL DEFAULT 0",
                             "new_investment INTEGER NOT NULL DEFAULT 0"])
 
@@ -287,12 +302,6 @@ class AnalysisTable(Database):
         conn.commit()
         conn.close()
 
-class Tables(Enum):
-    ACCOUNTS = "accounts"
-    POSTTAX_ENTRIES = "PosttaxEntries"
-    PRETAX_ENTRIES = "PretaxEntries"
-    ANALYSIS = "AnalysisTable"
-
 def addAccount(request, all_tables):
     # add account to account table, as column to entries table
     all_tables[Tables.ACCOUNTS].add_account(request)
@@ -318,12 +327,15 @@ def wipeAllTables(tables):
         table.wipe_table()
 
 def addNewEntry(request, all_tables):
-    if request.method == 'POST':
-        all_tables[Tables.ACCOUNTS].update_account_balance(request)
-        if 'posttax_submit' in request.form:
-            Tables.POSTTAX_ENTRIES.add_entry(request)
-            all_tables[Tables.ANALYSIS].recalculate(all_tables[Tables.POSTTAX_ENTRIES])
-        elif 'pretax_submit' in request.form:
-            all_tables[Tables.PRETAX_ENTRIES].add_entry(request)
-        else:
-            print("WARNING: request from input page not recognized")
+    if request.method != 'POST':
+        print("WARNING: failed to add new entry, request method is not POST")
+        return 
+    
+    all_tables[Tables.ACCOUNTS].update_account_balance(request)
+    if 'posttax_submit' in request.form:
+        all_tables[Tables.POSTTAX_ENTRIES].add_entry(request)
+        all_tables[Tables.ANALYSIS].recalculate(all_tables[Tables.POSTTAX_ENTRIES])
+    elif 'pretax_submit' in request.form:
+        all_tables[Tables.PRETAX_ENTRIES].add_entry(request)
+    else:
+        print("WARNING: request from input page not recognized")

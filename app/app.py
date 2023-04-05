@@ -9,7 +9,16 @@ app = Flask(__name__)
 @app.route('/static/css/<path:path>')
 def serve_css(path):
     return send_from_directory('static/css', path)
+print("dropping posttax entries")
+post = PretaxEntriesTable()
+conn = post.db_connection()
+cursor = conn.cursor()
 
+# retrieve the current column names
+cursor.execute("DROP TABLE IF EXISTS PosttaxEntries")
+conn.commit()
+conn.close()
+print("DROPPED")
 all_tables = {Tables.ACCOUNTS:AccountsDatabase(), 
               Tables.PRETAX_ENTRIES:PretaxEntriesTable(), 
               Tables.POSTTAX_ENTRIES:PosttaxEntriesTable(),
@@ -44,16 +53,16 @@ def input():
                            pretax_columns = all_tables[Tables.PRETAX_ENTRIES].get_column_names(),
                            posttax_columns = all_tables[Tables.POSTTAX_ENTRIES].get_column_names())
 
-@app.route('/submit', methods = ['POST', 'DELETE'])
-def submit():
-    print("submit triggered", request.form)
-    form_data = request.form
-    if 'addAccountName' in form_data:
-        return add_account(request)
-    elif 'deleteAccountName' in form_data:
-        return delete_account(request)
-    else:
-        return "Invalid form data", 400
+# @app.route('/submit', methods = ['POST', 'DELETE'])
+# def submit():
+#     print("submit triggered", request.form)
+#     form_data = request.form
+#     if 'addAccountName' in form_data:
+#         return add_account(request)
+#     elif 'deleteAccountName' in form_data:
+#         return delete_account(request)
+#     else:
+#         return "Invalid form data", 400
     
 @app.route('/add_account', methods=['POST', 'GET']) 
 def add_account():
