@@ -17,6 +17,7 @@ all_tables = {Tables.ACCOUNTS:AccountsDatabase(),
 
 @app.route('/')
 def index():
+    print()
     pretax_balance, posttax_balance = all_tables[Tables.ACCOUNTS].get_latest_balance()
     columns = all_tables[Tables.ANALYSIS].get_column_names()
     rows = all_tables[Tables.ANALYSIS].get_all_entries()
