@@ -20,7 +20,7 @@ class Database:
         try:
             conn = self.db_connection()
             cursor = conn.cursor()
-
+            
             sql_query = f"""CREATE TABLE IF NOT EXISTS {self.name} (
                 id SERIAL PRIMARY KEY,
                 {', '.join(fields)}
@@ -28,7 +28,7 @@ class Database:
             cursor.execute(sql_query)
             conn.commit()
             conn.close()
-
+            print("make table:", sql_query)
         except sqlite3.Error as e:
             print(f"Error creating {self.name} table: {e}")
 
@@ -68,11 +68,13 @@ class Database:
         return
 
     def format_balance(self, balance):
-        if not balance.isdigit():
-            balance = '0'
-        else:
-            balance = str(int(balance))
-        return balance 
+        print("balance:", balance)
+        try:
+            res = str(int(balance))
+        except:
+            res = '0'
+        print("converted to:", res)
+        return res
 
     def get_table_name(self):
         return self.name
@@ -199,6 +201,9 @@ class EntriesDatabase(Database):
             "notes TEXT DEFAULT ''",
             *self.columns + [f"CONSTRAINT unique_date_{self.name} UNIQUE (date)"]
         ])
+        conn = self.db_connection()
+        cursor = conn.cursor()
+        cursor.execute(f"CREATE UNIQUE INDEX unique_date_{self.name}_index ON {self.name} (date)")
     
     def add_column(self, request):
         conn = self.db_connection()
@@ -221,10 +226,19 @@ class EntriesDatabase(Database):
         conn.close()
 
     def add_entry(self, request):
-        conn = self.db_connection()
-        cursor = conn.cursor()
         accounts = {key: value for key, value in request.form.items() if key not in ['entry_date', 'posttax_submit', 
                                                                                      'pretax_submit']}
+        
+        conn = self.db_connection()
+        cursor = conn.cursor()
+        cursor.execute(f"SELECT name, type FROM {Tables.ACCOUNTS.value};")
+        account_types = dict(cursor.fetchall())
+        print("Account types:", account_types)
+        for account in accounts:
+            if account in account_types and account_types[account] == 'credit':
+                accounts[account] = str(-int(accounts[account]))
+                print("credit: ", account, accounts[account])
+        
         entry_date = request.form['entry_date']
         # Construct the SQL query to insert a new row into the 'entries' table
         columns = [f'"{col}"' for col in accounts.keys()]
@@ -234,19 +248,34 @@ class EntriesDatabase(Database):
             f"ON CONFLICT (date) DO UPDATE SET "\
             f"{', '.join([f'{col} = EXCLUDED.{col}' for col in columns if col != 'date'])};"
         params = [self.format_balance(value) for value in accounts.values()] + [entry_date]
+        print("executing:", sql_query, params)
         # Execute the SQL query and commit the changes to the database
         cursor.execute(sql_query, params)
+        
         conn.commit()
         conn.close()
 
     def wipe_table(self):
         self.delete_table()
         self.make_table()
+    
+    def get_all_entries(self, sorted):
+        if sorted:
+            conn = self.db_connection()
+            cursor = conn.cursor()
+            cursor.execute(f"SELECT * FROM {self.name} ORDER BY DATE DESC")
+            
+            rows = [row[1:] for row in cursor.fetchall()]
+            conn.close()
+            return rows
+        
+        return super().get_all_entries()
 
 class PretaxEntriesTable(EntriesDatabase):
     def __init__(self):
         self.name = str(Tables.PRETAX_ENTRIES.value)
         super().__init__(self.name)
+        
 
 class PosttaxEntriesTable(EntriesDatabase):
     def __init__(self):
@@ -254,6 +283,7 @@ class PosttaxEntriesTable(EntriesDatabase):
         super().__init__(self.name, 
                          ["income INTEGER NOT NULL DEFAULT 0",
                             "new_investment INTEGER NOT NULL DEFAULT 0"])
+        
 
 class AnalysisTable(Database):
     def __init__(self):

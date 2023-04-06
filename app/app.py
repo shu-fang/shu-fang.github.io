@@ -39,8 +39,8 @@ def input():
                            current_date=datetime.today().strftime('%Y-%m-%d'), 
                            pretax_accounts=all_tables[Tables.ACCOUNTS].get_accounts("pre-tax"), 
                            posttax_accounts=all_tables[Tables.ACCOUNTS].get_accounts("post-tax"), 
-                           posttax_entries=all_tables[Tables.POSTTAX_ENTRIES].get_all_entries(),
-                           pretax_entries=all_tables[Tables.PRETAX_ENTRIES].get_all_entries(),
+                           posttax_entries=all_tables[Tables.POSTTAX_ENTRIES].get_all_entries(True),
+                           pretax_entries=all_tables[Tables.PRETAX_ENTRIES].get_all_entries(True),
                            pretax_columns = all_tables[Tables.PRETAX_ENTRIES].get_column_names(),
                            posttax_columns = all_tables[Tables.POSTTAX_ENTRIES].get_column_names())
 
