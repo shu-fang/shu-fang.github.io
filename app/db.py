@@ -142,8 +142,7 @@ class AccountsDatabase(Database):
         conn = self.db_connection()
         cursor = conn.cursor()
 
-        # update account balance
-        
+        # update account balance        
         if 'pretax_submit' in request.form:
             table = Tables.PRETAX_ENTRIES.value
         elif 'posttax_submit' in request.form:
@@ -154,14 +153,12 @@ class AccountsDatabase(Database):
         latest_date = cursor.fetchone()[0]
         
         entry_date = datetime.strptime(request.form['entry_date'], '%Y-%m-%d').date()
-        print("latest, etnry date:", latest_date, entry_date)
         if request.method == 'POST' and (not latest_date or entry_date >= latest_date):
-            print("here")
             for account in request.form:
                 name = account
                 balance = self.format_balance(request.form[account])
-                
                 cursor.execute("UPDATE accounts SET balances=%s WHERE name=%s", (balance, name))
+                print("updating:", "UPDATE accounts SET balances=%s WHERE name=%s", (balance, name))
                 conn.commit()
 
         cursor.execute("SELECT name, balances FROM accounts")
@@ -228,17 +225,8 @@ class EntriesDatabase(Database):
     def add_entry(self, request):
         accounts = {key: value for key, value in request.form.items() if key not in ['entry_date', 'posttax_submit', 
                                                                                      'pretax_submit']}
-        
         conn = self.db_connection()
         cursor = conn.cursor()
-        cursor.execute(f"SELECT name, type FROM {Tables.ACCOUNTS.value};")
-        account_types = dict(cursor.fetchall())
-        print("Account types:", account_types)
-        for account in accounts:
-            if account in account_types and account_types[account] == 'credit':
-                accounts[account] = str(-int(accounts[account]))
-                print("credit: ", account, accounts[account])
-        
         entry_date = request.form['entry_date']
         # Construct the SQL query to insert a new row into the 'entries' table
         columns = [f'"{col}"' for col in accounts.keys()]
@@ -322,7 +310,7 @@ class AnalysisTable(Database):
             entry_dict = dict(entry)
             date = entry['date']
             income = entry['income']
-            balance = sum(value for key, value in entry_dict.items() if key not in ['date', 'income', 'notes'])
+            balance = sum(value for key, value in entry_dict.items() if key not in ['id', 'date', 'income', 'notes'])
             cashflow = balance - last_balance 
             spending = income - cashflow
             cursor.execute(f"INSERT INTO {self.name} (date, balance, cashflow, spending, notes) VALUES (DATE %s, %s,%s, %s, %s)",
@@ -369,11 +357,24 @@ def wipeAllTables(tables):
     for table in tables.values():
         table.wipe_table()
 
+def updateRequest(request, all_tables):
+    new_dict = dict(request.form)    
+    conn = all_tables[Tables.ACCOUNTS].db_connection()
+    cursor = conn.cursor()
+    cursor.execute(f"SELECT name, type FROM {Tables.ACCOUNTS.value};")
+    account_types = dict(cursor.fetchall())
+    for account in new_dict.keys():
+        if account in account_types and account_types[account] == 'credit':
+            new_dict[account] = str(-int(new_dict[account]))
+    
+    request.form = new_dict
+    return request.form
+
 def addNewEntry(request, all_tables):
     if request.method != 'POST':
         print("WARNING: failed to add new entry, request method is not POST")
         return 
-    
+    updateRequest(request, all_tables)
     all_tables[Tables.ACCOUNTS].update_account_balance(request)
     if 'posttax_submit' in request.form:
         all_tables[Tables.POSTTAX_ENTRIES].add_entry(request)
